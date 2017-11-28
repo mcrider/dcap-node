@@ -1,0 +1,18 @@
+{
+   "plural": "todos",
+   "single": "todo",
+   "description": "Simple todo content type",
+   "encrypted": false,
+   "shareable": true,
+   "fields": [
+      {
+         "name": "text",
+         "type": "string",
+         "required": true
+      },
+      {
+         "name": "completed",
+         "type": "boolean"
+      }
+   ]
+}
