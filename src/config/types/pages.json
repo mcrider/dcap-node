@@ -1,0 +1,10 @@
+{
+  "name": "pages",
+  "description": "Simple page content type",
+  "fields": [
+    {
+        "name": "text",
+        "type": "string"
+    }
+  ]
+}

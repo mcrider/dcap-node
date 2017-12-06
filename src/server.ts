@@ -21,10 +21,10 @@ dotenv.config({ path: ".env.example" });
 
 
 /**
- * Controllers (route handlers).
+ * Controllers
  */
 import * as apiController from "./controllers/api";
-
+import * as types from "./controllers/types";
 
 /**
  * Create Express server.
@@ -66,6 +66,14 @@ app.get("/type/:id", apiController.getType);
  * Error Handler. Provides full stack - remove for production
  */
 app.use(errorHandler());
+
+/**
+ * Load types from config into global.typeSchemas
+ */
+types.loadTypes();
+console.log("global typeschemas");
+console.log(global.typeSchemas);
+
 
 /**
  * Start Express server.

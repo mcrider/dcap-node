@@ -1,9 +1,6 @@
 {
-   "plural": "notes",
-   "single": "note",
+   "name": "notes",
    "description": "Simple note content type",
-   "encrypted": false,
-   "shareable": true,
    "fields": [
       {
          "name": "text",

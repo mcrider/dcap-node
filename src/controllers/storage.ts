@@ -1,15 +1,22 @@
-"use strict";
+import * as IpfsAPI from "ipfs-api";
 
-
+// or using options
+const ipfs = IpfsAPI({ host: "localhost", port: "5001", protocol: "http" });
 
 
 /**
  * Get IPFS Object
  * Return JSON
  */
-export let getObject = (id: string) => {
+export let getObject = async (id: string) => {
   // Get IPFS object
-  return "getObject";
+  const data = await ipfs.files.cat(id);
+  console.log("zxcvxzcv");
+  ipfs.name.publish(id, (err: string, res: any) => {
+    console.log("asdf");
+    console.log(res);
+  });
+  return data.toString("utf8");
 };
 
 /**

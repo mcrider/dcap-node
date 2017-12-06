@@ -1,9 +1,6 @@
 {
-   "plural": "todos",
-   "single": "todo",
+   "name": "todos",
    "description": "Simple todo content type",
-   "encrypted": false,
-   "shareable": true,
    "fields": [
       {
          "name": "text",
