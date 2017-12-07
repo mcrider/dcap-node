@@ -27,6 +27,12 @@ import * as apiController from "./controllers/api";
 import * as types from "./controllers/types";
 
 /**
+ * Load types from config into global.typeSchemas
+ */
+types.loadTypes();
+
+
+/**
  * Create Express server.
  */
 const app = express();
@@ -61,18 +67,12 @@ app.get("/object/:id", apiController.getObject);
 // app.post("/object/{id}", apiController.getObject);
 app.get("/type/:id", apiController.getType);
 // app.post("/type/{id}", apiController.getType);
+app.get("/type/:id/schema", apiController.getTypeSchema);
 
 /**
  * Error Handler. Provides full stack - remove for production
  */
 app.use(errorHandler());
-
-/**
- * Load types from config into global.typeSchemas
- */
-types.loadTypes();
-console.log("global typeschemas");
-console.log(global.typeSchemas);
 
 
 /**

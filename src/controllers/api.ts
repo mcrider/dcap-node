@@ -45,10 +45,7 @@ export let getType = (req: Request, res: Response) => {
  * Get type schema
  */
 export let getTypeSchema = (req: Request, res: Response) => {
-  // vars := mux.Vars(r);
-  // docType := vars["docType"];
-  // fmt.Fprintln(w, "Object Index for ", docType);
-  res.json({
-    label: "getType: " + req.params.id
-  });
+  const type = global.typeSchemas.get(req.params.id);
+  const response = type ? type.schema : { error: "Type not found" };
+  res.json(response);
 };

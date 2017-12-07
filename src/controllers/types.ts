@@ -7,14 +7,14 @@ import Type from "../models/Type";
  */
 export let loadTypes = () => {
   const typesDir = "./src/config/types/";
-  const typeSchemas: any = {};
+  const typeSchemas = new Map();
 
   const files = fs.readdirSync(typesDir);
 
   for (const file of files) {
     const data = fs.readFileSync(typesDir + file);
     const type = new Type(JSON.parse(data));
-    typeSchemas[type.name] = Type;
+    typeSchemas.set(type.name, type);
   }
 
   global.typeSchemas = typeSchemas;
