@@ -22,12 +22,14 @@ export let saveObject = async (id: string, data: Object) => {
     console.log("ID Set, update existing object");
   } else {
     const res = await ipfs.util.addFromStream(new Buffer(JSON.stringify(data), "utf8"));
+    const object = res[0];
+    console.log(`Saved object at ${object.hash}`);
 
     // Pin to server
     // TODO: Might want to make this configurable
-    ipfs.pin.add(res[0].hash);
+    ipfs.pin.add(object.hash);
 
-    return res[0];
+    return object;
   }
 };
 

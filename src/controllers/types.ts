@@ -54,10 +54,14 @@ export let saveTypeConfig = () => {
 export let checkTypeHashes = async () => {
   for (const [key, type] of global.typeSchemas) {
     if (!type.hash) {
-      const object = await storage.saveObject(undefined, type);
+      // Save empty array to IPFS to get the type listing's initial hash
+      const object = await storage.saveObject(undefined, []);
       const hash = object.hash;
 
-      // FIXME; save; address; to; file;
+      const schema = type.schema;
+      schema.hash = hash;
+
+      fs.writeFileSync(typesDir + type.name + ".json", JSON.stringify(schema, undefined, 2));
     }
   }
 };
