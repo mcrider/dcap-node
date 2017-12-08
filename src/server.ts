@@ -64,9 +64,8 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
  */
 app.get("/", apiController.getRoot);
 app.get("/object/:id", apiController.getObject);
-// app.post("/object/{id}", apiController.getObject);
+// app.post("/object/{id}", apiController.saveObject);
 app.get("/type/:id", apiController.getType);
-// app.post("/type/{id}", apiController.getType);
 app.get("/type/:id/schema", apiController.getTypeSchema);
 
 /**

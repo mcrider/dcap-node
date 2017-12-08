@@ -1,6 +1,6 @@
 interface TypeSchema {
   name: string;
-  address?: string;
+  hash?: string;
   description?: string;
   fields: Array<Object>;
 }
@@ -14,7 +14,7 @@ export default class Type {
       throw new TypeError("Type schema must have a name attribute");
     }
 
-    // TODO: If address doesn't exist, save to IPFS and save address to file
+    // TODO: If hash doesn't exist, save to IPFS and save hash to file
     this._schema = schema;
   }
 
@@ -26,11 +26,11 @@ export default class Type {
     return this._schema.name;
   }
 
-  get address() {
-    return this._schema.address;
+  get hash() {
+    return this._schema.hash;
   }
 
-  set address(address: string) {
-    this._schema.address = address;
+  set hash(hash: string) {
+    this._schema.hash = hash;
   }
 }
