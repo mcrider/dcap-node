@@ -33,3 +33,6 @@ Thumbs.db
 
 # Ignore built ts files
 dist/**/*
+
+# Project-specific
+src/config/types/*.json
