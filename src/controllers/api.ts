@@ -2,6 +2,14 @@ import { Response, Request, NextFunction } from "express";
 import * as Ajv from "ajv";
 
 import * as storage from "./storage";
+import * as types from "./types";
+
+interface Link {
+  "/": string;
+}
+interface TypeObject {
+  link: Link;
+}
 
 /**
  * GET /
@@ -19,8 +27,12 @@ export let getRoot = (req: Request, res: Response) => {
  */
 export let getType = async (req: Request, res: Response) => {
   const type = global.dcap.typeSchemas.get(req.params.type);
-  const response = type ? await storage.getObject(type.hash) : { error: "Type not found" };
-  res.json(response);
+  if (type) {
+    const response = await storage.getObject(type.hash);
+    res.json(response);
+  } else {
+    res.status(404).json({ error: "Type not found" });
+  }
 };
 
 /**
@@ -29,8 +41,11 @@ export let getType = async (req: Request, res: Response) => {
  */
 export let getTypeSchema = (req: Request, res: Response) => {
   const type = global.dcap.typeSchemas.get(req.params.type);
-  const response = type ? type.schema : { error: "Type not found" };
-  res.json(response);
+  if (type) {
+    res.json(type.schema);
+  } else {
+    res.status(404).json({ error: "Type not found" });
+  }
 };
 
 /**
@@ -51,7 +66,7 @@ export let saveObject = async (req: Request, res: Response) => {
 
   // Check that type in URL exists
   if (!type) {
-    res.json({ error: `Type "${req.params.type}" does not exist` });
+    res.status(404).json({ error: `Type "${req.params.type}" does not exist` });
     return;
   }
 
@@ -59,23 +74,39 @@ export let saveObject = async (req: Request, res: Response) => {
   const ajv = new Ajv();
   const valid = ajv.validate(type.schema, req.body);
   if (!valid)  {
-    res.json({ error: ajv.errorsText() });
+    res.status(500).json({ error: ajv.errorsText() });
     return;
   }
 
   // Save to IPFS
   const object = await storage.saveObject(req.body);
 
-  // If it not already in there, save to type index
+  // If not already in there, save to type index
   const typeIndex = await storage.getObject(type.hash);
-  // TODO
-
-  res.json({
-    success: "Object created",
-    hash: object.hash
+  let exists = false;
+  typeIndex.objects.forEach((typeObject: TypeObject) => {
+    if (typeObject.link["/"] == object.hash) {
+      exists = true;
+    }
   });
 
+  if (exists) {
+    res.status(500).json({
+      error: "Object already exists",
+      hash: object.hash
+    });
+  } else {
+    typeIndex.objects.push({
+      "link": {"/": object.hash },
+    });
 
+    types.updateTypeIndex(type, typeIndex);
+
+    res.json({
+      success: "Object created",
+      hash: object.hash
+    });
+  }
 };
 
 /**

@@ -5,6 +5,7 @@ import * as express from "express";
 import * as compression from "compression";  // compresses requests
 import * as session from "express-session";
 import * as bodyParser from "body-parser";
+import * as cors from "cors";
 import * as logger from "morgan";
 import * as errorHandler from "errorhandler";
 import * as lusca from "lusca";
@@ -46,6 +47,7 @@ app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
 app.use(compression());
+app.use(cors());
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

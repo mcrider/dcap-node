@@ -3,7 +3,6 @@ import * as IpfsAPI from "ipfs-api";
 // or using options
 const ipfs = IpfsAPI({ host: "localhost", port: "5001", protocol: "http" });
 
-
 /**
  * Get IPFS Object
  * Return JSON

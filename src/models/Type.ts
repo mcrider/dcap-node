@@ -1,10 +1,12 @@
 interface TypeSchema {
+  $schema: string;
   title: string;
-  hash?: string;
   description?: string;
-  fields: Array<Object>;
+  type: string;
+  properties: Object;
+  required: Array<string>;
+  hash?: string;
 }
-
 
 export default class Type {
   private _schema: TypeSchema;
