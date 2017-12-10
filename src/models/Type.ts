@@ -1,5 +1,5 @@
 interface TypeSchema {
-  name: string;
+  title: string;
   hash?: string;
   description?: string;
   fields: Array<Object>;
@@ -10,11 +10,10 @@ export default class Type {
   private _schema: TypeSchema;
 
   constructor(schema: TypeSchema) {
-    if (!schema.name) {
-      throw new TypeError("Type schema must have a name attribute");
+    if (!schema.title) {
+      throw new SyntaxError("Type schema must have a title attribute");
     }
 
-    // TODO: If hash doesn't exist, save to IPFS and save hash to file
     this._schema = schema;
   }
 
@@ -22,8 +21,8 @@ export default class Type {
     return this._schema;
   }
 
-  get name() {
-    return this._schema.name;
+  get title() {
+    return this._schema.title;
   }
 
   get hash() {

@@ -27,8 +27,9 @@ import * as apiController from "./controllers/api";
 import * as types from "./controllers/types";
 
 /**
- * Load types from config into global.typeSchemas
+ * Load global config
  */
+global.dcap = {};
 types.loadTypes();
 
 
@@ -63,10 +64,11 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
  * API  routes.
  */
 app.get("/", apiController.getRoot);
-app.get("/object/:id", apiController.getObject);
-// app.post("/object/{id}", apiController.saveObject);
-app.get("/type/:id", apiController.getType);
-app.get("/type/:id/schema", apiController.getTypeSchema);
+app.get("/type/:type", apiController.getType);
+app.get("/type/:type/schema", apiController.getTypeSchema);
+app.get("/object/:hash", apiController.getObject);
+app.post("/type/:type", apiController.saveObject);
+app.post("/type/:type/:hash", apiController.updateObject);
 
 /**
  * Error Handler. Provides full stack - remove for production

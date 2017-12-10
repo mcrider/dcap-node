@@ -38,6 +38,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "ajv": "^5.5.1",
     "async": "^2.1.2",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.2",
@@ -56,6 +57,7 @@
     "request": "^2.78.0"
   },
   "devDependencies": {
+    "@types/ajv": "^1.0.0",
     "@types/async": "^2.0.40",
     "@types/bcrypt-nodejs": "0.0.30",
     "@types/body-parser": "^1.16.2",
