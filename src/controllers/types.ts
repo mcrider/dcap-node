@@ -6,6 +6,13 @@ import * as storage from "./storage";
 
 const typesDir = "./src/config/types/";
 
+interface Link {
+  "/": string;
+}
+interface TypeObject {
+  link: Link;
+}
+
 /**
  * Load types from local JSON files
  * Validates type schema and creates index hash if needed
@@ -51,6 +58,9 @@ export let checkTypeHashes = async () => {
   }
 };
 
+/**
+ * Save the typeIndex and store new hash to config file
+ */
 export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
   const object = await storage.saveObject(typeIndex);
   const hash = object.hash;
@@ -59,4 +69,89 @@ export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
   schema.hash = hash;
 
   fs.writeFileSync(typesDir + type.title + ".json", JSON.stringify(schema, undefined, 2));
+};
+
+/**
+ * Save an object to IPFS and return its hash
+ */
+export let saveObject = async (typeName: string, body: Object, hash?: string) => {
+  const type = global.dcap.typeSchemas.get(typeName);
+
+  // Check that type in URL exists
+  if (!type) {
+    return { status: 404, response: { error: `Type "${typeName}" does not exist` } };
+  }
+
+  // Validate against schema
+  const ajv = new Ajv();
+  const valid = ajv.validate(type.schema, body);
+  if (!valid)  {
+    return { status: 500, response: { error: ajv.errorsText() } };
+  }
+
+  // Save to IPFS
+  const object = await storage.saveObject(body);
+
+  // If not already in there, save to type index
+  const typeIndex = await storage.getObject(type.hash);
+  let exists = false;
+  let hashIndex = -1;
+  typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
+    if (typeObject.link["/"] == object.hash) {
+      exists = true;
+    }
+
+    if (hash && typeObject.link["/"] == hash) {
+      hashIndex = index;
+    }
+  });
+
+  if (exists) {
+    return { status: 500, response: { error: "Object already exists", hash: object.hash } };
+  } else if (hash) {
+      // Replace existing hash
+      if (hashIndex < 0) {
+        return { status: 404, response: { success: "Object to update not found", hash: object.hash } };
+      } else {
+        typeIndex.objects[hashIndex] = {
+          "link": {"/": object.hash },
+        };
+        updateTypeIndex(type, typeIndex);
+        return { status: 200, response: { success: "Object updated", hash: object.hash } };
+      }
+  } else {
+    typeIndex.objects.push({
+      "link": {"/": object.hash },
+    });
+    updateTypeIndex(type, typeIndex);
+    return { status: 200, response: { success: "Object created", hash: object.hash } };
+  }
+};
+
+/**
+ * Remove an object from a type index (does not delete object)
+ */
+export let removeObject = async (typeName: string, hash: string) => {
+  const type = global.dcap.typeSchemas.get(typeName);
+
+  // Check that type in URL exists
+  if (!type) {
+    return { status: 404, response: { error: `Type "${typeName}" does not exist` } };
+  }
+
+  const typeIndex = await storage.getObject(type.hash);
+  let hashIndex = -1;
+  typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
+    if (typeObject.link["/"] == hash) {
+      hashIndex = index;
+    }
+  });
+
+  if (hashIndex < 0) {
+    return { status: 404, response: { success: "Object to remove not found", hash: hash } };
+  } else {
+    delete typeIndex.objects[hashIndex];
+    updateTypeIndex(type, typeIndex);
+    return { status: 200, response: { success: "Object removed from typeIndex", hash: hash } };
+  }
 };

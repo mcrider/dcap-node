@@ -69,8 +69,9 @@ app.get("/", apiController.getRoot);
 app.get("/type/:type", apiController.getType);
 app.get("/type/:type/schema", apiController.getTypeSchema);
 app.get("/object/:hash", apiController.getObject);
-app.post("/type/:type", apiController.saveObject);
+app.post("/type/:type", apiController.addObject);
 app.post("/type/:type/:hash", apiController.updateObject);
+app.delete("/type/:type/:hash", apiController.deleteObject);
 
 /**
  * Error Handler. Provides full stack - remove for production

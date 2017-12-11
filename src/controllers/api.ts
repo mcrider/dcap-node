@@ -4,13 +4,6 @@ import * as Ajv from "ajv";
 import * as storage from "./storage";
 import * as types from "./types";
 
-interface Link {
-  "/": string;
-}
-interface TypeObject {
-  link: Link;
-}
-
 /**
  * GET /
  * Show API info page
@@ -29,6 +22,7 @@ export let getType = async (req: Request, res: Response) => {
   const type = global.dcap.typeSchemas.get(req.params.type);
   if (type) {
     const response = await storage.getObject(type.hash);
+    response.hash = type.hash;
     res.json(response);
   } else {
     res.status(404).json({ error: "Type not found" });
@@ -61,52 +55,9 @@ export let getObject = async (req: Request, res: Response) => {
  * POST /type/{type}
  * Add a new object
  */
-export let saveObject = async (req: Request, res: Response) => {
-  const type = global.dcap.typeSchemas.get(req.params.type);
-
-  // Check that type in URL exists
-  if (!type) {
-    res.status(404).json({ error: `Type "${req.params.type}" does not exist` });
-    return;
-  }
-
-  // Validate against schema
-  const ajv = new Ajv();
-  const valid = ajv.validate(type.schema, req.body);
-  if (!valid)  {
-    res.status(500).json({ error: ajv.errorsText() });
-    return;
-  }
-
-  // Save to IPFS
-  const object = await storage.saveObject(req.body);
-
-  // If not already in there, save to type index
-  const typeIndex = await storage.getObject(type.hash);
-  let exists = false;
-  typeIndex.objects.forEach((typeObject: TypeObject) => {
-    if (typeObject.link["/"] == object.hash) {
-      exists = true;
-    }
-  });
-
-  if (exists) {
-    res.status(500).json({
-      error: "Object already exists",
-      hash: object.hash
-    });
-  } else {
-    typeIndex.objects.push({
-      "link": {"/": object.hash },
-    });
-
-    types.updateTypeIndex(type, typeIndex);
-
-    res.json({
-      success: "Object created",
-      hash: object.hash
-    });
-  }
+export let addObject = async (req: Request, res: Response) => {
+  const { status, response } = await types.saveObject(req.params.type, req.body);
+  res.status(status).json(response);
 };
 
 /**
@@ -114,10 +65,15 @@ export let saveObject = async (req: Request, res: Response) => {
  * Update an existing object
  */
 export let updateObject = async (req: Request, res: Response) => {
-  console.log(req.body);
-  // const data = await storage.saveObject(req.params.type);
-  res.json({
-    type: req.params.type,
-    body: req.body
-  });
+  const { status, response } = await types.saveObject(req.params.type, req.body, req.params.hash);
+  res.status(status).json(response);
+};
+
+/**
+ * DELETE /type/{type}/{hash}
+ * Update an existing object
+ */
+export let deleteObject = async (req: Request, res: Response) => {
+  const { status, response } = await types.removeObject(req.params.type, req.params.hash);
+  res.status(status).json(response);
 };
