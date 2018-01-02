@@ -40,6 +40,7 @@
   "dependencies": {
     "ajv": "^5.5.1",
     "async": "^2.1.2",
+    "bcrypt": "^1.0.3",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@types/ajv": "^1.0.0",
     "@types/async": "^2.0.40",
+    "@types/bcrypt": "^1.0.0",
     "@types/bcrypt-nodejs": "0.0.30",
     "@types/body-parser": "^1.16.2",
     "@types/compression": "0.0.33",
