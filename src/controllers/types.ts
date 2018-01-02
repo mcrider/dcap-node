@@ -94,14 +94,16 @@ export let saveObject = async (typeName: string, body: Object, hash?: string) =>
 
   // If not already in there, save to type index
   const typeIndex = await storage.getObject(type.hash);
+  console.log("typeIndex");
+  console.log(typeIndex);
   let exists = false;
   let hashIndex = -1;
   typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
-    if (typeObject.link["/"] == object.hash) {
+    if (typeObject && typeObject.link["/"] == object.hash) {
       exists = true;
     }
 
-    if (hash && typeObject.link["/"] == hash) {
+    if (hash && typeObject && typeObject.link["/"] == hash) {
       hashIndex = index;
     }
   });
