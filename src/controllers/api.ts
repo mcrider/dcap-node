@@ -3,6 +3,7 @@ import * as Ajv from "ajv";
 
 import * as storage from "./storage";
 import * as types from "./types";
+import * as users from "./users";
 
 /**
  * GET /
@@ -75,5 +76,23 @@ export let updateObject = async (req: Request, res: Response) => {
  */
 export let deleteObject = async (req: Request, res: Response) => {
   const { status, response } = await types.removeObject(req.params.type, req.params.hash);
+  res.status(status).json(response);
+};
+
+/**
+ * POST /user/register
+ * Create a new user
+ */
+export let createUser = async (req: Request, res: Response) => {
+  const { status, response } = await users.createUser(req.body.username, req.body.password);
+  res.status(status).json(response);
+};
+
+/**
+ * POST /user/login
+ * Login user
+ */
+export let loginUser = async (req: Request, res: Response) => {
+  const { status, response } = await users.loginUser(req.body.username, req.body.password);
   res.status(status).json(response);
 };

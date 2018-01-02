@@ -26,7 +26,6 @@ dotenv.config({ path: ".env.example" });
  */
 import * as apiController from "./controllers/api";
 import * as types from "./controllers/types";
-
 /**
  * Load global config
  */
@@ -66,6 +65,8 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
  * API  routes.
  */
 app.get("/", apiController.getRoot);
+app.post("/user/create", apiController.createUser);
+app.post("/user/login", apiController.loginUser);
 app.get("/type/:type", apiController.getType);
 app.get("/type/:type/schema", apiController.getTypeSchema);
 app.get("/object/:hash", apiController.getObject);
