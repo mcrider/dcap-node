@@ -8,6 +8,7 @@ mongoose.connect(process.env.MONGODB_URI);
 export interface IUser extends mongoose.Document {
     username: string;
     password: string;
+    pub_key: string;
     comparePassword: Function;
 }
 
@@ -17,10 +18,12 @@ export interface IUserModel extends mongoose.Model<IUser> {
 
 const schema = new mongoose.Schema({
   username: { type: String, required: true, index: { unique: true } },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  pub_key: { type: String }
 });
 
 schema.pre("save", async function (next) {
+  // Hash the user's password before saving
   const salt = await bcrypt.genSalt(12);
   const hash = await bcrypt.hash(this.password, salt);
 

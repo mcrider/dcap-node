@@ -11,6 +11,9 @@
     "tslint.exclude": "**/node_modules/**/*",
     "cSpell.words": [
         "dcap",
-        "ipfs"
+        "ipfs",
+        "key",
+        "openpgp",
+        "priv"
     ]
 }

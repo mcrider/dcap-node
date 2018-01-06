@@ -57,6 +57,7 @@
     "lusca": "^1.4.1",
     "mongoose": "^5.0.0-rc0",
     "morgan": "^1.7.0",
+    "openpgp": "^2.6.1",
     "pug": "^2.0.0-beta6",
     "request": "^2.78.0"
   },
