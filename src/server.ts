@@ -26,6 +26,8 @@ dotenv.config({ path: ".env" });
  */
 import * as apiController from "./controllers/api";
 import * as types from "./controllers/types";
+
+
 /**
  * Load global config
  */
@@ -38,13 +40,10 @@ types.loadTypes();
  */
 const app = express();
 
-
 /**
  * Express configuration.
  */
 app.set("port", process.env.PORT || 3000);
-app.set("views", path.join(__dirname, "../views"));
-app.set("view engine", "pug");
 app.use(compression());
 app.use(cors());
 app.use(logger("dev"));

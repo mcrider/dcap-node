@@ -12,8 +12,8 @@ import * as users from "./users";
  * Show API info page
  */
 export let getRoot = (req: Request, res: Response) => {
-  res.render("api/index", {
-    title: "dcap"
+  res.status(200).json({
+    response: "Welcome to dcap! Please visit https://github.com/mcrider/dcap-node for more information."
   });
 };
 
