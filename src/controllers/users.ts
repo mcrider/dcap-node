@@ -63,3 +63,19 @@ export let loginUser = async (username: string, password: string) => {
     return { status: 403, response: { error: "User login failed" } };
   }
 };
+
+/**
+ * Validate request token
+ */
+export let validateToken = async (token: string) => {
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    return decoded;
+  } catch (err) {
+    return false;
+  }
+};

@@ -36,8 +36,5 @@ schema.methods.comparePassword = async function (candidatePassword: string) {
   return valid;
 };
 
-schema.static("findByUsername", (username: string) => {
-  return User.find({ username: username}).lean().exec();
-});
 
 export const User = mongoose.model<IUser>("User", schema) as IUserModel;

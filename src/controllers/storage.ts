@@ -1,7 +1,7 @@
 import * as IpfsAPI from "ipfs-api";
 
 // or using options
-const ipfs = IpfsAPI({ host: "localhost", port: "5001", protocol: "http" });
+const ipfs = IpfsAPI({ host: process.env.IPFS_HOST, port: process.env.IPFS_PORT, protocol: process.env.IPFS_PROTOCOL });
 
 /**
  * Get IPFS Object

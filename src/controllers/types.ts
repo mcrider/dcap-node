@@ -22,6 +22,7 @@ interface TypePayload {
   jwt_token: any;
 }
 
+
 /**
  * Load types from local JSON files
  * Validates type schema and creates index hash if needed
@@ -55,6 +56,35 @@ export let loadTypes = () => {
   checkTypeHashes();
 };
 
+
+/**
+ * Get type by name (shows index of objects)
+ */
+export let getType = async (typeName: string) => {
+  const type = global.dcap.typeSchemas.get(typeName);
+  if (type) {
+    const response = await storage.getObject(type.hash);
+    response.hash = type.hash;
+    return { status: 200, response: response };
+  } else {
+    return { status: 404, response: { error: "Type not found" } };
+  }
+};
+
+
+/**
+ * Get type schema from memory
+ */
+export let getTypeSchema = (typeName: string) => {
+  const type = global.dcap.typeSchemas.get(typeName);
+  if (type) {
+    return { status: 200, response: type.schema };
+  } else {
+    return { status: 404, response: { error: "Type not found" } };
+  }
+};
+
+
 /**
  * Check that all types have associated IPFS hashes, or else create and save them
  */
@@ -66,6 +96,7 @@ export let checkTypeHashes = async () => {
     }
   }
 };
+
 
 /**
  * Save the typeIndex and store new hash to config file
@@ -82,7 +113,7 @@ export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
 
 
 /**
- * Show object by hash (for encrypted objects)
+ * Fetch and decrypt object by hash (for encrypted objects)
  */
 export let getEncryptedData = async (typeName: string, hash: string, privKey: string, username: string, password: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
@@ -106,29 +137,6 @@ export let getEncryptedData = async (typeName: string, hash: string, privKey: st
   }
 };
 
-/**
- * Show object by hash (for plaintext objects)
- */
-// export let getPlaintextData = async (req: Request, res: Response) => {
-//   const type = global.dcap.typeSchemas.get(req.params.type);
-//   if (!type) {
-//     res.status(404).json({ error: "Type not found" });
-//   }
-
-//   const user = await User.findOne({ username: req.body.jwt_token.username });
-
-//   const privKey = req.body.priv_key;
-//   const password = req.body.password;
-//   const hash = req.body.hash || req.params.hash;
-//   if (type.schema.encrypted && (!privKey || !password)) {
-//     res.status(401).json({ error: "Password and/or private key not included in request body" });
-//   } else if (type.schema.encrypted) {
-//     return decrypted; message;
-//     const data = await encryp
-//   } else {
-//     const data = await storage.getObject(hash);
-//   }
-// };
 
 /**
  * Save an object to IPFS and return its hash
@@ -207,6 +215,7 @@ export let saveObject = async (typeName: string, body: TypePayload, hash?: strin
     return { status: 200, response: { success: "Object created", hash: object.hash } };
   }
 };
+
 
 /**
  * Remove an object from a type index (does not delete object)

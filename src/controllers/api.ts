@@ -2,7 +2,6 @@ import { Response, Request, NextFunction } from "express";
 import * as Ajv from "ajv";
 import * as jwt from "jsonwebtoken";
 
-import { User } from "../models/User";
 import * as storage from "./storage";
 import * as types from "./types";
 import * as users from "./users";
@@ -22,14 +21,8 @@ export let getRoot = (req: Request, res: Response) => {
  * Get type by name (shows index of objects)
  */
 export let getType = async (req: Request, res: Response) => {
-  const type = global.dcap.typeSchemas.get(req.params.type);
-  if (type) {
-    const response = await storage.getObject(type.hash);
-    response.hash = type.hash;
-    res.json(response);
-  } else {
-    res.status(404).json({ error: "Type not found" });
-  }
+  const { status, response } = await types.getType(req.params.type);
+  res.status(status).json(response);
 };
 
 /**
@@ -37,12 +30,8 @@ export let getType = async (req: Request, res: Response) => {
  * Get type schema
  */
 export let getTypeSchema = (req: Request, res: Response) => {
-  const type = global.dcap.typeSchemas.get(req.params.type);
-  if (type) {
-    res.json(type.schema);
-  } else {
-    res.status(404).json({ error: "Type not found" });
-  }
+  const { status, response } = types.getTypeSchema(req.params.type);
+  res.status(status).json(response);
 };
 
 /**
@@ -119,11 +108,11 @@ export let validateToken = async (req: Request, res: Response, next: Function) =
     return res.status(403).json({ error: "No token provided." });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+  const decoded = await users.validateToken(token);
+  if (decoded) {
     req.body.jwt_token = decoded;
     next();
-  } catch (err) {
+  } else {
     return res.status(403).json({ error: "Failed to authenticate token." });
   }
 };
