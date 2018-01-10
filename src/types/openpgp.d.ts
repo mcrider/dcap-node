@@ -19,6 +19,14 @@ export interface KeyOptions {
     unlocked?: boolean;
 }
 
+export interface MessageOptions {
+    data?: string;
+    message?: message.Message;
+    publicKeys: Array<any>;
+    privateKeys?: any;
+    privateKey?: any;
+}
+
 export interface Keyid {
     bytes: string;
 }
@@ -34,14 +42,12 @@ export interface VerifiedMessage {
 }
 
 /** Decrypts message and verifies signatures
-
     @param privateKey private key with decrypted secret key data
     @param publicKeys array of keys to verify signatures
     @param msg the message object with signed and encrypted data
     */
 export function decryptAndVerifyMessage(privateKey: key.Key, publicKeys: Array<key.Key>, msg: string): Promise<VerifiedMessage>;
 /** Decrypts message and verifies signatures
-
     @param privateKey private key with decrypted secret key data
     @param publicKey single key to verify signatures
     @param msg the message object with signed and encrypted data
@@ -49,24 +55,16 @@ export function decryptAndVerifyMessage(privateKey: key.Key, publicKeys: Array<k
 export function decryptAndVerifyMessage(privateKey: key.Key, publicKey: key.Key, msg: string): Promise<VerifiedMessage>;
 
 /** Decrypts message
-
     @param privateKey private key with decrypted secret key data
     @param msg the message object with the encrypted data
     */
-export function decryptMessage(privateKey: key.Key, msg: message.Message): Promise<string>;
+export function decrypt(options: MessageOptions): Promise<any>;
+
 
 /** Encrypts message text with keys
-    @param keys array of keys used to encrypt the message
-    @param text message as native JavaScript string
-    @returns encrypted ASCII armored message
+    @param options
     */
-export function encryptMessage(keys: Array<key.Key>, message: string): Promise<string>;
-/** Encrypts message text with keys
-
-    @param single key used to encrypt the message
-    @param text message as native JavaScript string
-    */
-export function encryptMessage(key: key.Key, message: string): Promise<string>;
+export function encrypt(options: MessageOptions): Promise<any>;
 
 /** Generates a new OpenPGP key pair. Currently only supports RSA keys. Primary and subkey will be of same type.
     @param options

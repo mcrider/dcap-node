@@ -9,6 +9,8 @@ const ipfs = IpfsAPI({ host: "localhost", port: "5001", protocol: "http" });
  */
 export let getObject = async (id: string) => {
   const data = await ipfs.files.cat(id);
+  const decoded = JSON.parse(data.toString("utf8"));
+
   return JSON.parse(data.toString("utf8"));
 };
 
@@ -21,8 +23,9 @@ export let saveObject = async (data: Object) => {
   console.log(`Saved object at ${object.hash}`);
 
   // Pin to server
-  // TODO: Might want to make this configurable
-  ipfs.pin.add(object.hash);
+  if (process.env.PIN_OBJECTS === true) {
+    ipfs.pin.add(object.hash);
+  }
 
   return object;
 };

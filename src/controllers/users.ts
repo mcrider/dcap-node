@@ -1,6 +1,6 @@
 
 import * as jwt from "jsonwebtoken";
-import * as openpgp from "openpgp";
+import * as encryption from "./encryption";
 import { User } from "../models/User";
 
 /**
@@ -8,17 +8,8 @@ import { User } from "../models/User";
  */
 export let createUser = async (username: string, password: string) => {
   // Generate PGP keypair
-  const pgpOptions = {
-    userIds: [{ name: username }],
-    numBits: process.env.RSA_KEY_SIZE,
-    passphrase: password
-  };
-
-  let key;
-  try {
-    key = await openpgp.generateKey(pgpOptions);
-  } catch (error) {
-    console.log(error);
+  const key = await encryption.generateKeypair(username, password);
+  if (!key) {
     return { status: 403, response: { error: `Key creation failed` } };
   }
 
