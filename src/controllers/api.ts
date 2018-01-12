@@ -12,7 +12,7 @@ import * as users from "./users";
  */
 export let getRoot = (req: Request, res: Response) => {
   res.status(200).json({
-    response: "Welcome to dcap! Please visit https://github.com/mcrider/dcap-node for more information."
+    message: "Welcome to dcap! Please visit https://github.com/mcrider/dcap-node for more information."
   });
 };
 
@@ -89,6 +89,15 @@ export let createUser = async (req: Request, res: Response) => {
 };
 
 /**
+ * DELETE /user
+ * Remove your account
+ */
+export let deleteUser = async (req: Request, res: Response) => {
+  const { status, response } = await users.deleteUser(req.body.password, req.body.username);
+  res.status(status).json(response);
+};
+
+/**
  * POST /user/login
  * Login user
  */
@@ -108,9 +117,9 @@ export let validateToken = async (req: Request, res: Response, next: Function) =
     return res.status(403).json({ error: "No token provided." });
   }
 
-  const decoded = await users.validateToken(token);
+  const decoded = <any> await users.validateToken(token);
   if (decoded) {
-    req.body.jwt_token = decoded;
+    req.body.username = decoded.username;
     next();
   } else {
     return res.status(403).json({ error: "Failed to authenticate token." });

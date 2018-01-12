@@ -61,6 +61,7 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
 app.get("/", apiController.getRoot);
 app.post("/user/create", apiController.createUser);
 app.post("/user/login", apiController.loginUser);
+app.post("/user/delete", apiController.validateToken, apiController.deleteUser);
 app.get("/type/:type", apiController.getType);
 app.get("/type/:type/schema", apiController.getTypeSchema);
 app.post("/type/:type", apiController.validateToken, apiController.addObject);

@@ -19,7 +19,7 @@ interface TypePayload {
   data: any;
   priv_key: string;
   password: string;
-  jwt_token: any;
+  username: string;
 }
 
 
@@ -167,11 +167,11 @@ export let saveObject = async (typeName: string, body: TypePayload, hash?: strin
       return { status: 500, response: { error: "Password not passed in request body" } };
     }
 
-    if (!body.jwt_token || !body.jwt_token.username) {
+    if (!body.username) {
       return { status: 500, response: { error: "JWT token not valid" } };
     }
 
-    const user = await User.findOne({ username: body.jwt_token.username });
+    const user = await User.findOne({ username: body.username });
 
     body = await encryption.encrypt(body.data, user.pub_key, body.priv_key, body.password);
     console.log(body);
