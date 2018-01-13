@@ -15,13 +15,6 @@ interface TypeObject {
   link: Link;
 }
 
-interface TypePayload {
-  data: any;
-  priv_key: string;
-  password: string;
-  username: string;
-}
-
 
 /**
  * Load types from local JSON files
@@ -141,7 +134,7 @@ export let getEncryptedData = async (typeName: string, hash: string, privKey: st
 /**
  * Save an object to IPFS and return its hash
  */
-export let saveObject = async (typeName: string, body: TypePayload, hash?: string) => {
+export let saveObject = async (typeName: string, data: any, username: string, privKey?: string, password?: string, hash?: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
 
   // Check that type in URL exists
@@ -149,9 +142,17 @@ export let saveObject = async (typeName: string, body: TypePayload, hash?: strin
     return { status: 404, response: { error: `Type "${typeName}" does not exist` } };
   }
 
+  if (!data) {
+    return { status: 500, response: { error: "Must supply data object in request body" } };
+  }
+
+  if (!username) {
+    return { status: 500, response: { error: "JWT token not valid" } };
+  }
+
   // Validate against schema
   const ajv = new Ajv();
-  const valid = ajv.validate(type.schema, body.data);
+  const valid = ajv.validate(type.schema, data);
   if (!valid)  {
     return { status: 500, response: { error: ajv.errorsText() } };
   }
@@ -159,26 +160,21 @@ export let saveObject = async (typeName: string, body: TypePayload, hash?: strin
   // If object is supposed to be encrypted, do so
   // Fail if private key and password not passed to request
   if (type.schema.encrypted) {
-    if (!body.priv_key) {
+    if (!privKey) {
       return { status: 500, response: { error: "Private key not passed in request body" } };
     }
 
-    if (!body.password) {
+    if (!password) {
       return { status: 500, response: { error: "Password not passed in request body" } };
     }
 
-    if (!body.username) {
-      return { status: 500, response: { error: "JWT token not valid" } };
-    }
+    const user = await User.findOne({ username: username });
 
-    const user = await User.findOne({ username: body.username });
-
-    body = await encryption.encrypt(body.data, user.pub_key, body.priv_key, body.password);
-    console.log(body);
+    data = await encryption.encrypt(data, user.pub_key, privKey, password);
   }
 
   // Save to IPFS
-  const object = await storage.saveObject(body);
+  const object = await storage.saveObject(data);
 
   // If not already in there, save to type index
   const typeIndex = await storage.getObject(type.hash);
@@ -201,14 +197,35 @@ export let saveObject = async (typeName: string, body: TypePayload, hash?: strin
       if (hashIndex < 0) {
         return { status: 404, response: { success: "Object to update not found", hash: object.hash } };
       } else {
+        const created = typeIndex.objects[hashIndex].created;
         typeIndex.objects[hashIndex] = {
+          "created": created,
+          "updated": Date.now(),
+          "username": username,
           "link": {"/": object.hash },
         };
+        console.log("update");
+        console.log({
+          "created": created,
+          "updated": Date.now(),
+          "username": username,
+          "link": {"/": object.hash },
+        });
         updateTypeIndex(type, typeIndex);
         return { status: 200, response: { success: "Object updated", hash: object.hash } };
       }
   } else {
     typeIndex.objects.push({
+      "created": Date.now(),
+      "updated": Date.now(),
+      "username": username,
+      "link": {"/": object.hash },
+    });
+    console.log("add");
+    console.log({
+      "created": Date.now(),
+      "updated": Date.now(),
+      "username": username,
       "link": {"/": object.hash },
     });
     updateTypeIndex(type, typeIndex);

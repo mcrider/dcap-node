@@ -61,7 +61,7 @@ export let getTypeObject = async (req: Request, res: Response) => {
  * Add a new object
  */
 export let addObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.saveObject(req.params.type, req.body);
+  const { status, response } = await types.saveObject(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password);
   res.status(status).json(response);
 };
 
@@ -70,7 +70,7 @@ export let addObject = async (req: Request, res: Response) => {
  * Update an existing object
  */
 export let updateObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.saveObject(req.params.type, req.body, req.params.hash);
+  const { status, response } = await types.saveObject(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password, req.params.hash);
   res.status(status).json(response);
 };
 

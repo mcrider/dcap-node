@@ -17,9 +17,5 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
-  "exclude": [
-    "src/config/types/*",
-    "test/*"
   ]
 }

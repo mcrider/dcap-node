@@ -164,9 +164,21 @@ describe("POST /type/{type}", () => {
       .done(done);
   });
 
+  it("should fail without a data object", (done) => {
+    frisby
+      .setup({ request: { headers: { "x-access-token": token } }})
+      .post(`${BASE_URL}/type/${TEST_TYPE}`, { password: TEST_PASSWORD })
+      .expect("status", 500)
+      .expect("jsonTypes", {
+        error: Joi.string()
+      })
+      .done(done);
+  });
+
   it("should fail without a login token", (done) => {
     frisby
-      .post(`${BASE_URL}/type/${TEST_TYPE}`, { token: "wrongtoken", password: TEST_PASSWORD })
+      .setup({ request: { headers: { "x-access-token": "wrongtoken" } }})
+      .post(`${BASE_URL}/type/${TEST_TYPE}`, { password: TEST_PASSWORD })
       .expect("status", 403)
       .expect("jsonTypes", {
         error: Joi.string()
@@ -176,7 +188,8 @@ describe("POST /type/{type}", () => {
 
   it("should return 404 for a nonexistent type", (done) => {
     frisby
-      .post(`${BASE_URL}/type/foo`, { token: token, password: TEST_PASSWORD })
+      .setup({ request: { headers: { "x-access-token": token } }})
+      .post(`${BASE_URL}/type/foo`, { data: TEST_DATA, password: TEST_PASSWORD })
       .expect("status", 404)
       .expect("jsonTypes", {
         error: Joi.string()
