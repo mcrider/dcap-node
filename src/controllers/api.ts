@@ -21,7 +21,8 @@ export let getRoot = (req: Request, res: Response) => {
  * Get type by name (shows index of objects)
  */
 export let getType = async (req: Request, res: Response) => {
-  const { status, response } = await types.getType(req.params.type);
+  const user = req.query.user || req.query.username || false;
+  const { status, response } = await types.getType(req.params.type, user);
   res.status(status).json(response);
 };
 

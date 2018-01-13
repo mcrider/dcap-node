@@ -53,10 +53,16 @@ export let loadTypes = () => {
 /**
  * Get type by name (shows index of objects)
  */
-export let getType = async (typeName: string) => {
+export let getType = async (typeName: string, username?: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
   if (type) {
     const response = await storage.getObject(type.hash);
+
+    if (username) {
+      // Filter by username
+      response.objects = response.objects.filter(filteredObject => filteredObject.username === username);
+    }
+
     response.hash = type.hash;
     return { status: 200, response: response };
   } else {
@@ -204,25 +210,11 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
           "username": username,
           "link": {"/": object.hash },
         };
-        console.log("update");
-        console.log({
-          "created": created,
-          "updated": Date.now(),
-          "username": username,
-          "link": {"/": object.hash },
-        });
         updateTypeIndex(type, typeIndex);
         return { status: 200, response: { success: "Object updated", hash: object.hash } };
       }
   } else {
     typeIndex.objects.push({
-      "created": Date.now(),
-      "updated": Date.now(),
-      "username": username,
-      "link": {"/": object.hash },
-    });
-    console.log("add");
-    console.log({
       "created": Date.now(),
       "updated": Date.now(),
       "username": username,
