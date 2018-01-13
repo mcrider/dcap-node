@@ -40,7 +40,11 @@ export let getTypeSchema = (req: Request, res: Response) => {
  */
 export let getObject = async (req: Request, res: Response) => {
   const data = await storage.getObject(req.params.hash);
-  res.status(200).json(data);
+  if (data) {
+    res.status(200).json(data);
+  } else {
+    res.status(404).json({ error: "IPFS object not found or innaccessible"});
+  }
 };
 
 /**
@@ -48,7 +52,7 @@ export let getObject = async (req: Request, res: Response) => {
  * Show object by hash (for encrypted objects)
  */
 export let getTypeObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.getEncryptedData(req.params.type, req.params.hash, req.body.priv_key, req.body.jwt_token.username, req.body.password);
+  const { status, response } = await types.getEncryptedData(req.params.type, req.params.hash, req.body.priv_key, req.body.username, req.body.password);
   res.status(status).json(response);
 };
 
@@ -62,7 +66,7 @@ export let addObject = async (req: Request, res: Response) => {
 };
 
 /**
- * POST /type/{type}/{hash}
+ * PUT /type/{type}/{hash}
  * Update an existing object
  */
 export let updateObject = async (req: Request, res: Response) => {
@@ -80,7 +84,7 @@ export let deleteObject = async (req: Request, res: Response) => {
 };
 
 /**
- * POST /user/register
+ * POST /user/create
  * Create a new user
  */
 export let createUser = async (req: Request, res: Response) => {

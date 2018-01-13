@@ -99,7 +99,7 @@ export let checkTypeHashes = async () => {
 
 
 /**
- * Save the typeIndex and store new hash to config file
+ * Save the typeIndex and save new hash to config file
  */
 export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
   const object = await storage.saveObject(typeIndex);
@@ -228,18 +228,24 @@ export let removeObject = async (typeName: string, hash: string) => {
     return { status: 404, response: { error: `Type "${typeName}" does not exist` } };
   }
 
+  // TODO: Object username must match user's username
+
   const typeIndex = await storage.getObject(type.hash);
   let hashIndex = -1;
   typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
-    if (typeObject.link["/"] == hash) {
+    if (typeObject && typeObject.link["/"] === hash) {
       hashIndex = index;
     }
   });
 
   if (hashIndex < 0) {
-    return { status: 404, response: { success: "Object to remove not found", hash: hash } };
+    return { status: 404, response: { error: "Object to remove not found", hash: hash } };
   } else {
-    delete typeIndex.objects[hashIndex];
+    if (typeIndex.objects.length === 1) {
+      typeIndex.objects = [];
+    } else {
+      delete typeIndex.objects[hashIndex];
+    }
     updateTypeIndex(type, typeIndex);
     return { status: 200, response: { success: "Object removed from typeIndex", hash: hash } };
   }
