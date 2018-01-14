@@ -80,7 +80,7 @@ export let updateObject = async (req: Request, res: Response) => {
  * Remove an object from type index
  */
 export let deleteObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.removeObject(req.params.type, req.params.hash);
+  const { status, response } = await types.deleteObject(req.params.type, req.params.hash, req.body.username);
   res.status(status).json(response);
 };
 
@@ -119,7 +119,7 @@ export let validateToken = async (req: Request, res: Response, next: Function) =
   const token = req.body.token || req.query.token || req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(403).json({ error: "No token provided." });
+    return res.status(401).json({ error: "No token provided." });
   }
 
   const decoded = <any> await users.validateToken(token);
@@ -127,6 +127,6 @@ export let validateToken = async (req: Request, res: Response, next: Function) =
     req.body.username = decoded.username;
     next();
   } else {
-    return res.status(403).json({ error: "Failed to authenticate token." });
+    return res.status(401).json({ error: "Failed to authenticate token." });
   }
 };

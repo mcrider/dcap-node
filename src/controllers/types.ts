@@ -153,7 +153,7 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
   }
 
   if (!username) {
-    return { status: 500, response: { error: "JWT token not valid" } };
+    return { status: 401, response: { error: "JWT token not valid" } };
   }
 
   // Validate against schema
@@ -202,6 +202,8 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
       // Replace existing hash
       if (hashIndex < 0) {
         return { status: 404, response: { success: "Object to update not found", hash: object.hash } };
+      } else if (typeIndex.objects[hashIndex].username !== username) {
+        return { status: 403, response: { error: "Invalid username for this object" } };
       } else {
         const created = typeIndex.objects[hashIndex].created;
         typeIndex.objects[hashIndex] = {
@@ -227,9 +229,9 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
 
 
 /**
- * Remove an object from a type index (does not delete object)
+ * Remove an object from a type index (does not delete the actual IPFS doc though)
  */
-export let removeObject = async (typeName: string, hash: string) => {
+export let deleteObject = async (typeName: string, hash: string, username: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
 
   // Check that type in URL exists
@@ -237,7 +239,9 @@ export let removeObject = async (typeName: string, hash: string) => {
     return { status: 404, response: { error: `Type "${typeName}" does not exist` } };
   }
 
-  // TODO: Object username must match user's username
+  if (!username) {
+    return { status: 401, response: { error: "JWT token not valid" } };
+  }
 
   const typeIndex = await storage.getObject(type.hash);
   let hashIndex = -1;
@@ -250,6 +254,10 @@ export let removeObject = async (typeName: string, hash: string) => {
   if (hashIndex < 0) {
     return { status: 404, response: { error: "Object to remove not found", hash: hash } };
   } else {
+    if (typeIndex.objects[hashIndex].username !== username) {
+      return { status: 403, response: { error: "Invalid username for this object" } };
+    }
+
     if (typeIndex.objects.length === 1) {
       typeIndex.objects = [];
     } else {
