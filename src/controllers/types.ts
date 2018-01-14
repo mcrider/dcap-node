@@ -153,7 +153,7 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
   }
 
   if (!username) {
-    return { status: 401, response: { error: "JWT token not valid" } };
+    return { status: 401, response: { error: "Username not supplied" } };
   }
 
   // Validate against schema
@@ -240,7 +240,7 @@ export let deleteObject = async (typeName: string, hash: string, username: strin
   }
 
   if (!username) {
-    return { status: 401, response: { error: "JWT token not valid" } };
+    return { status: 401, response: { error: "Username not supplied" } };
   }
 
   const typeIndex = await storage.getObject(type.hash);

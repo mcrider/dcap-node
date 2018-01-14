@@ -421,21 +421,35 @@ describe("DELETE /type/{type}/{hash}", () => {
  * Remove own user account
  */
 describe("POST /user/delete", () => {
-  it("should return 200 OK with valid response", (done) => {
-    frisby.post(`${BASE_URL}/user/delete`, { token: token, password: TEST_PASSWORD })
-      .expect("status", 200)
+  it("should fail with an invalid password", (done) => {
+    frisby
+      .setup({ request: { headers: { "x-access-token": token } }})
+      .post(`${BASE_URL}/user/delete`, { password: "wrongpass" })
+      .expect("status", 401)
       .expect("jsonTypes", {
-        success: Joi.string()
+        error: Joi.string()
       })
       .done(done);
   });
 
   it("should fail without a login token", (done) => {
     frisby
-      .post(`${BASE_URL}/user/delete`, { token: "wrongtoken", password: TEST_PASSWORD })
+      .setup({ request: { headers: { "x-access-token": "wrongtoken" } }})
+      .post(`${BASE_URL}/user/delete`, { password: TEST_PASSWORD })
       .expect("status", 401)
       .expect("jsonTypes", {
         error: Joi.string()
+      })
+      .done(done);
+  });
+
+  it("should return 200 OK with valid response", (done) => {
+    frisby
+      .setup({ request: { headers: { "x-access-token": token } }})
+      .post(`${BASE_URL}/user/delete`, { password: TEST_PASSWORD })
+      .expect("status", 200)
+      .expect("jsonTypes", {
+        success: Joi.string()
       })
       .done(done);
   });

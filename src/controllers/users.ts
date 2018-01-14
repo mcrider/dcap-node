@@ -69,18 +69,22 @@ export let loginUser = async (username: string, password: string) => {
  */
 export let deleteUser = async (password: string, username: string) => {
   if (!password) {
-    return { status: 403, response: { error: "Password must be supplied" } };
+    return { status: 401, response: { error: "Password must be supplied" } };
   }
 
-  // TODO: find user, and compare hashed password with password
-  // Can delete with user ID
-
   if (!username) {
-    return { status: 403, response: { error: "JWT token not valid" } };
+    return { status: 401, response: { error: "Username not supplied" } };
+  }
+
+  const user = await User.findOne({ username: username });
+
+  const valid = await user.comparePassword(password);
+  if (!valid) {
+    return { status: 401, response: { error: "Authentication failed. Wrong Password." } };
   }
 
   try {
-    const user = await User.findOneAndRemove({ username: username });
+    user.remove();
     return { status: 200, response: { success: "User successfully deleted" } };
   } catch (error) {
     return { status: 403, response: { error: "User deletion failed" } };
