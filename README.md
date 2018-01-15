@@ -49,7 +49,7 @@ In the `/src/config/types` directory are the type definitions that DCAP uses to 
 - [`POST /type/:type`: Add New Document](#add-new-document)
 - [`POST /type/:type/:hash`: Get Decrypted Document](#get-decrypted-document)
 - [`GET /document/:hash`: Get Unencrypted Document](#get-unencrypted-document)
-- [`PUT /type/:type/:hash`: Update Document](#update-objeect)
+- [`PUT /type/:type/:hash`: Update Document](#update-document)
 - [`DELETE /type/:type/:hash`: Delete Document From Index](#delete-document-from-index)
 
 
@@ -355,4 +355,4 @@ Contributions are welcome. Please see github issues for open bugs or feature req
 ## License
 Copyright (c) 2018 Matt Crider.
 
-Licensed under the [MIT License]("/LICENSE").
+Licensed under the [MIT License]("LICENSE").
