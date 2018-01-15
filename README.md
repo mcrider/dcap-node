@@ -355,4 +355,4 @@ Contributions are welcome. Please see github issues for open bugs or feature req
 ## License
 Copyright (c) 2018 Matt Crider.
 
-Licensed under the [MIT License]("LICENSE").
+Licensed under the [MIT License](LICENSE).
