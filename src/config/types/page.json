@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "page",
+  "description": "Simple page content type",
+  "type": "object",
+  "encrypted": false,
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "contents": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "contents"
+  ]
+}
