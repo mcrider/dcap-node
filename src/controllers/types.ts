@@ -153,7 +153,7 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
   }
 
   if (!username) {
-    return { status: 401, response: { error: "Username not supplied" } };
+    return { status: 401, response: { error: "Username not found in token" } };
   }
 
   // Validate against schema
@@ -240,7 +240,7 @@ export let deleteDocument = async (typeName: string, hash: string, username: str
   }
 
   if (!username) {
-    return { status: 401, response: { error: "Username not supplied" } };
+    return { status: 401, response: { error: "Username not found in token" } };
   }
 
   const typeIndex = await storage.getDocument(type.hash);

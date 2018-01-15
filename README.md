@@ -53,7 +53,7 @@ In the `/src/config/types` directory are the type definitions that DCAP uses to 
 - [`DELETE /type/:type/:hash`: Delete Document From Index](#delete-document-from-index)
 
 
-🔑: Requires authorization
+🔑: Requires authentication token. This token (sent to you on login) can be passed to authorized endpoints via the `token` attribute in the request body, via a `token` query parameter, or with an `x-access-token` HTTP header. This token must be refreshed every 24 hours.
 
 ### Create New User
 `POST /user/create`
@@ -81,9 +81,6 @@ HTTP/1.1 200 OK
 **Error Responses**
 - `500` Key Creation Failed
 - `500` User Creation Failed
-
-**Notes**
-- The PGP public key will be stored in the user's database record. They private key should be kept in a safe place.
 
 
 ### Login User
@@ -138,7 +135,7 @@ HTTP/1.1 200 OK
 
 **Error Responses**
 - `401` Password must be supplied
-- `401` Username not supplied
+- `401` Username not found in token
 - `401` Incorrect password
 - `403` User deletion failed
 
@@ -204,7 +201,7 @@ HTTP/1.1 200 OK
 ### Add New Document
 🔑 `POST /type/:type`
 
-Create a new document and store it to the type index. The document data must be passed in the body's `data` field. If the type schema indicates the document should encrypted, a password and private key must be passed in the request body.
+Create a new document and store it to the type index. The document data must be passed in the body's `data` field. This data will be validated against the type's schema. If the type schema indicates the document should encrypted, a password and private key must be passed in the request body.
 
 **URL Params**
 - `:type` Type name
@@ -229,7 +226,7 @@ HTTP/1.1 200 OK
 ```
 
 **Error Responses**
-- `401` Username not supplied
+- `401` Username not found in token
 - `404` Type does not exist
 - `500` Must supply data object in request body
 - `500` Private key not passed in request body
@@ -240,7 +237,7 @@ HTTP/1.1 200 OK
 ### Get Decrypted Document
 🔑 `POST /type/:type/:hash`
 
-Fetches IPFS document and decrypts if encrypted (otherwise behaves the same as `GET /document/:hash`).
+Fetches IPFS document and decrypts it if encrypted (otherwise behaves the same as `GET /document/:hash`).
 
 **URL Params**
 - `:type` Type name
@@ -314,7 +311,7 @@ HTTP/1.1 200 OK
 ```
 
 **Error Responses**
-- `401` Username not supplied
+- `401` Username not found in token
 - `403` Invalid username for this document
 - `404` Document to update not found
 - `404` Type does not exist
@@ -343,7 +340,7 @@ HTTP/1.1 200 OK
 ```
 
 **Error Responses**
-- `401` Username not supplied
+- `401` Username not found in token
 - `403` Invalid username for this document
 - `404` Document to remove not found
 - `404` Type does not exist

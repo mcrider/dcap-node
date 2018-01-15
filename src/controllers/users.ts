@@ -73,7 +73,7 @@ export let deleteUser = async (password: string, username: string) => {
   }
 
   if (!username) {
-    return { status: 401, response: { error: "Username not supplied" } };
+    return { status: 401, response: { error: "Username not found in token" } };
   }
 
   const user = await User.findOne({ username: username });
