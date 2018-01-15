@@ -41,16 +41,25 @@ In the `/src/config/types` directory are the type definitions that DCAP uses to 
 
 ## API Reference
 
-- [`POST /user/create`: Create New User](#create-new-user)
-- [`POST /user/login`: Login User](#login-user)
-- [`POST /user/delete`: Delete Account](#delete-account)
-- [`GET /type/:type`: Get Type Index](#get-type-index)
-- [`GET /type/:type/schema`: Get Type Schema](#get-type-schema)
-- [`POST /type/:type`: Add New Document](#add-new-document)
-- [`POST /type/:type/:hash`: Get Decrypted Document](#get-decrypted-document)
-- [`GET /document/:hash`: Get Unencrypted Document](#get-unencrypted-document)
-- [`PUT /type/:type/:hash`: Update Document](#update-document)
-- [`DELETE /type/:type/:hash`: Delete Document From Index](#delete-document-from-index)
+[`POST /user/create`: Create New User](#create-new-user)
+
+[`POST /user/login`: Login User](#login-user)
+
+🔑 [`POST /user/delete`: Delete Account](#delete-account)
+
+[`GET /type/:type`: Get Type Index](#get-type-index)
+
+[`GET /type/:type/schema`: Get Type Schema](#get-type-schema)
+
+🔑 [`POST /type/:type`: Add New Document](#add-new-document)
+
+🔑 [`POST /type/:type/:hash`: Get Decrypted Document](#get-decrypted-document)
+
+[`GET /document/:hash`: Get Unencrypted Document](#get-unencrypted-document)
+
+🔑 [`PUT /type/:type/:hash`: Update Document](#update-document)
+
+🔑 [`DELETE /type/:type/:hash`: Delete Document From Index](#delete-document-from-index)
 
 
 🔑: Requires authentication token. This token (sent to you on login) can be passed to authorized endpoints via the `token` attribute in the request body, via a `token` query parameter, or with an `x-access-token` HTTP header. This token must be refreshed every 24 hours.
