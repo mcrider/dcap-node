@@ -72,9 +72,9 @@ Creates a new user and generates a PGP keypair. The public key will be stored in
 ```
 HTTP/1.1 200 OK
 {
-	"success": "User created",
-	"pub_key": "-----BEGIN PGP PUBLIC KEY BLOCK-----....",
-	"priv_key": "-----BEGIN PGP PRIVATE KEY BLOCK-----..."
+  "success": "User created",
+  "pub_key": "-----BEGIN PGP PUBLIC KEY BLOCK-----....",
+  "priv_key": "-----BEGIN PGP PRIVATE KEY BLOCK-----..."
 }
 ```
 
@@ -103,8 +103,8 @@ Logs user in and returns a JWT token to submit with authorized requests.
 ```
 HTTP/1.1 200 OK
 {
-	"success": "Login succeeded",
-	"token": "eyJhbGciOi..."
+  "success": "Login succeeded",
+  "token": "eyJhbGciOi..."
 }
 ```
 
@@ -132,7 +132,7 @@ Deletes your user account. Stored documents are not removed from their types.
 ```
 HTTP/1.1 200 OK
 {
-	"success": "User successfully deleted"
+  "success": "User successfully deleted"
 }
 ```
 
@@ -159,18 +159,18 @@ Gets list of documents for a given type. You can also filter documents by userna
 ```
 HTTP/1.1 200 OK
 {
-    "documents": [
-      {
-        "created": 1515884391549,
-        "updated": 1515884391549,
-        "username": "testuser",
-        "link": {
-          "/": "QmcxBLD2MCcqEw1q5L3xqxDiSMkYHnoe4LYLskTn7vhwci"
-        }
-      },
-      ...
-    ],
-    "hash": "QmQ5SBZnsAbZ1BEmsAZe8keBDbUwQMzuc2ZF7njYDE5Bum" // IFPS reference to this index
+  "documents": [
+    {
+      "created": 1515884391549,
+      "updated": 1515884391549,
+      "username": "testuser",
+      "link": {
+        "/": "QmcxBLD2MCcqEw1q5L3xqxDiSMkYHnoe4LYLskTn7vhwci"
+      }
+    },
+    ...
+  ],
+  "hash": "QmQ5SBZnsAbZ1BEmsAZe8keBDbUwQMzuc2ZF7njYDE5Bum" // IFPS reference to this index
 }
 ```
 
@@ -191,9 +191,9 @@ Retrieve the schema specification for a given type.
 ```
 HTTP/1.1 200 OK
 {
-	"$schema": "http://json-schema.org/draft-06/schema#",
-	"title": "note",
-    ...
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "note",
+  ...
 }
 ```
 
@@ -223,8 +223,8 @@ Create a new document and store it to the type index. The document data must be 
 ```
 HTTP/1.1 200 OK
 {
-	"success": "Document created",
-	"hash": "QmaCSJeLMJYpbecr3Qft4w2CQQDmQo9w8Y5DPQmf9ptGVL"
+  "success": "Document created",
+  "hash": "QmaCSJeLMJYpbecr3Qft4w2CQQDmQo9w8Y5DPQmf9ptGVL"
 }
 ```
 
@@ -308,8 +308,8 @@ Update an existing document and replace its hash in the type index with the newl
 ```
 HTTP/1.1 200 OK
 {
-	"success": "Document updated",
-	"hash": "QmaCSJeLMJYpbecf5Qft4w2CQQDmQo9w8Y5DPQmf9ptGw4..."
+  "success": "Document updated",
+  "hash": "QmaCSJeLMJYpbecf5Qft4w2CQQDmQo9w8Y5DPQmf9ptGw4..."
 }
 ```
 
