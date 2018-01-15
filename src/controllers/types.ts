@@ -11,7 +11,7 @@ const typesDir = "./src/config/types/";
 interface Link {
   "/": string;
 }
-interface TypeObject {
+interface TypeDocument {
   link: Link;
 }
 
@@ -51,16 +51,16 @@ export let loadTypes = () => {
 
 
 /**
- * Get type by name (shows index of objects)
+ * Get type by name (shows index of documents)
  */
 export let getType = async (typeName: string, username?: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
   if (type) {
-    const response = await storage.getObject(type.hash);
+    const response = await storage.getDocument(type.hash);
 
     if (username) {
       // Filter by username
-      response.objects = response.objects.filter(filteredObject => filteredObject.username === username);
+      response.documents = response.documents.filter(filteredDocument => filteredDocument.username === username);
     }
 
     response.hash = type.hash;
@@ -91,7 +91,7 @@ export let checkTypeHashes = async () => {
   for (const [key, type] of global.dcap.typeSchemas) {
     if (!type.hash) {
       // Save empty array to IPFS to get the type listing's initial hash
-      updateTypeIndex(type, { objects: [] });
+      updateTypeIndex(type, { documents: [] });
     }
   }
 };
@@ -101,8 +101,8 @@ export let checkTypeHashes = async () => {
  * Save the typeIndex and save new hash to config file
  */
 export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
-  const object = await storage.saveObject(typeIndex);
-  const hash = object.hash;
+  const document = await storage.saveDocument(typeIndex);
+  const hash = document.hash;
 
   const schema = type.schema;
   schema.hash = hash;
@@ -112,7 +112,7 @@ export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
 
 
 /**
- * Fetch and decrypt object by hash (for encrypted objects)
+ * Fetch and decrypt document by hash (for encrypted documents)
  */
 export let getEncryptedData = async (typeName: string, hash: string, privKey: string, username: string, password: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
@@ -128,19 +128,19 @@ export let getEncryptedData = async (typeName: string, hash: string, privKey: st
   if (type.schema.encrypted && (!privKey || !password)) {
     return { status: 401, response: { error: "Password and/or private key not included in request body" } };
   } else if (type.schema.encrypted) {
-    const data = await storage.getObject(hash);
+    const data = await storage.getDocument(hash);
     const decrypted = await encryption.decrypt(data, user.pub_key, privKey, password);
     return { status: 200, response: decrypted };
   } else {
-    const data = await storage.getObject(hash);
+    const data = await storage.getDocument(hash);
   }
 };
 
 
 /**
- * Save an object to IPFS and return its hash
+ * Save an document to IPFS and return its hash
  */
-export let saveObject = async (typeName: string, data: any, username: string, privKey?: string, password?: string, hash?: string) => {
+export let saveDocument = async (typeName: string, data: any, username: string, privKey?: string, password?: string, hash?: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
 
   // Check that type in URL exists
@@ -149,7 +149,7 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
   }
 
   if (!data) {
-    return { status: 500, response: { error: "Must supply data object in request body" } };
+    return { status: 500, response: { error: "Must supply data document in request body" } };
   }
 
   if (!username) {
@@ -163,7 +163,7 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
     return { status: 500, response: { error: ajv.errorsText() } };
   }
 
-  // If object is supposed to be encrypted, do so
+  // If document is supposed to be encrypted, do so
   // Fail if private key and password not passed to request
   if (type.schema.encrypted) {
     if (!privKey) {
@@ -180,58 +180,58 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
   }
 
   // Save to IPFS
-  const object = await storage.saveObject(data);
+  const document = await storage.saveDocument(data);
 
   // If not already in there, save to type index
-  const typeIndex = await storage.getObject(type.hash);
+  const typeIndex = await storage.getDocument(type.hash);
   let exists = false;
   let hashIndex = -1;
-  typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
-    if (typeObject && typeObject.link["/"] == object.hash) {
+  typeIndex.documents.forEach((typeDocument: TypeDocument, index: number) => {
+    if (typeDocument && typeDocument.link["/"] == document.hash) {
       exists = true;
     }
 
-    if (hash && typeObject && typeObject.link["/"] == hash) {
+    if (hash && typeDocument && typeDocument.link["/"] == hash) {
       hashIndex = index;
     }
   });
 
   if (exists) {
-    return { status: 500, response: { error: "Object already exists" } };
+    return { status: 500, response: { error: "Document already exists" } };
   } else if (hash) {
       // Replace existing hash
       if (hashIndex < 0) {
-        return { status: 404, response: { success: "Object to update not found" } };
-      } else if (typeIndex.objects[hashIndex].username !== username) {
-        return { status: 403, response: { error: "Invalid username for this object" } };
+        return { status: 404, response: { success: "Document to update not found" } };
+      } else if (typeIndex.documents[hashIndex].username !== username) {
+        return { status: 403, response: { error: "Invalid username for this document" } };
       } else {
-        const created = typeIndex.objects[hashIndex].created;
-        typeIndex.objects[hashIndex] = {
+        const created = typeIndex.documents[hashIndex].created;
+        typeIndex.documents[hashIndex] = {
           "created": created,
           "updated": Date.now(),
           "username": username,
-          "link": {"/": object.hash },
+          "link": {"/": document.hash },
         };
         updateTypeIndex(type, typeIndex);
-        return { status: 200, response: { success: "Object updated", hash: object.hash } };
+        return { status: 200, response: { success: "Document updated", hash: document.hash } };
       }
   } else {
-    typeIndex.objects.push({
+    typeIndex.documents.push({
       "created": Date.now(),
       "updated": Date.now(),
       "username": username,
-      "link": {"/": object.hash },
+      "link": {"/": document.hash },
     });
     updateTypeIndex(type, typeIndex);
-    return { status: 200, response: { success: "Object created", hash: object.hash } };
+    return { status: 200, response: { success: "Document created", hash: document.hash } };
   }
 };
 
 
 /**
- * Remove an object from a type index (does not delete the actual IPFS doc though)
+ * Remove an document from a type index (does not delete the actual IPFS doc though)
  */
-export let deleteObject = async (typeName: string, hash: string, username: string) => {
+export let deleteDocument = async (typeName: string, hash: string, username: string) => {
   const type = global.dcap.typeSchemas.get(typeName);
 
   // Check that type in URL exists
@@ -243,27 +243,27 @@ export let deleteObject = async (typeName: string, hash: string, username: strin
     return { status: 401, response: { error: "Username not supplied" } };
   }
 
-  const typeIndex = await storage.getObject(type.hash);
+  const typeIndex = await storage.getDocument(type.hash);
   let hashIndex = -1;
-  typeIndex.objects.forEach((typeObject: TypeObject, index: number) => {
-    if (typeObject && typeObject.link["/"] === hash) {
+  typeIndex.documents.forEach((typeDocument: TypeDocument, index: number) => {
+    if (typeDocument && typeDocument.link["/"] === hash) {
       hashIndex = index;
     }
   });
 
   if (hashIndex < 0) {
-    return { status: 404, response: { error: "Object to remove not found", hash: hash } };
+    return { status: 404, response: { error: "Document to remove not found", hash: hash } };
   } else {
-    if (typeIndex.objects[hashIndex].username !== username) {
-      return { status: 403, response: { error: "Invalid username for this object" } };
+    if (typeIndex.documents[hashIndex].username !== username) {
+      return { status: 403, response: { error: "Invalid username for this document" } };
     }
 
-    if (typeIndex.objects.length === 1) {
-      typeIndex.objects = [];
+    if (typeIndex.documents.length === 1) {
+      typeIndex.documents = [];
     } else {
-      delete typeIndex.objects[hashIndex];
+      delete typeIndex.documents[hashIndex];
     }
     updateTypeIndex(type, typeIndex);
-    return { status: 200, response: { success: "Object removed from type index", hash: hash } };
+    return { status: 200, response: { success: "Document removed from type index", hash: hash } };
   }
 };

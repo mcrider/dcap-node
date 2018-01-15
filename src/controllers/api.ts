@@ -18,7 +18,7 @@ export let getRoot = (req: Request, res: Response) => {
 
 /**
  * GET /type/{type}
- * Get type by name (shows index of objects)
+ * Get type by name (shows index of documents)
  */
 export let getType = async (req: Request, res: Response) => {
   const user = req.query.user || req.query.username || false;
@@ -36,51 +36,51 @@ export let getTypeSchema = (req: Request, res: Response) => {
 };
 
 /**
- * GET /object/{hash}
- * Show object by hash
+ * GET /document/{hash}
+ * Show document by hash
  */
-export let getObject = async (req: Request, res: Response) => {
-  const data = await storage.getObject(req.params.hash);
+export let getDocument = async (req: Request, res: Response) => {
+  const data = await storage.getDocument(req.params.hash);
   if (data) {
     res.status(200).json(data);
   } else {
-    res.status(404).json({ error: "IPFS object not found or innaccessible"});
+    res.status(404).json({ error: "IPFS document not found or innaccessible"});
   }
 };
 
 /**
  * POST /type/{type}/{hash}
- * Show object by hash (for encrypted objects)
+ * Show document by hash (for encrypted documents)
  */
-export let getTypeObject = async (req: Request, res: Response) => {
+export let getTypeDocument = async (req: Request, res: Response) => {
   const { status, response } = await types.getEncryptedData(req.params.type, req.params.hash, req.body.priv_key, req.body.username, req.body.password);
   res.status(status).json(response);
 };
 
 /**
  * POST /type/{type}
- * Add a new object
+ * Add a new document
  */
-export let addObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.saveObject(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password);
+export let addDocument = async (req: Request, res: Response) => {
+  const { status, response } = await types.saveDocument(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password);
   res.status(status).json(response);
 };
 
 /**
  * PUT /type/{type}/{hash}
- * Update an existing object
+ * Update an existing document
  */
-export let updateObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.saveObject(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password, req.params.hash);
+export let updateDocument = async (req: Request, res: Response) => {
+  const { status, response } = await types.saveDocument(req.params.type, req.body.data, req.body.username, req.body.priv_key, req.body.password, req.params.hash);
   res.status(status).json(response);
 };
 
 /**
  * DELETE /type/{type}/{hash}
- * Remove an object from type index
+ * Remove an document from type index
  */
-export let deleteObject = async (req: Request, res: Response) => {
-  const { status, response } = await types.deleteObject(req.params.type, req.params.hash, req.body.username);
+export let deleteDocument = async (req: Request, res: Response) => {
+  const { status, response } = await types.deleteDocument(req.params.type, req.params.hash, req.body.username);
   res.status(status).json(response);
 };
 

@@ -88,7 +88,7 @@ describe("POST /user/login", () => {
 
 
 /**
- * Get type by name (shows index of objects)
+ * Get type by name (shows index of documents)
  */
 describe("GET /type/{type}", () => {
   it("should return 200 OK with valid response", (done) => {
@@ -96,7 +96,7 @@ describe("GET /type/{type}", () => {
       .get(`${BASE_URL}/type/${TEST_TYPE}`)
       .expect("status", 200)
       .expect("jsonTypes", {
-        objects: Joi.array()
+        documents: Joi.array()
       })
       .done(done);
   });
@@ -106,7 +106,7 @@ describe("GET /type/{type}", () => {
       .get(`${BASE_URL}/type/foo`)
       .expect("status", 404)
       .expect("jsonTypes", {
-        objects: Joi.array()
+        documents: Joi.array()
       })
       .done(done);
   });
@@ -122,7 +122,7 @@ describe("GET /type/{type}/schema", () => {
       .get(`${BASE_URL}/type/${TEST_TYPE}/schema`)
       .expect("status", 200)
       .expect("jsonTypes", {
-        objects: Joi.array()
+        documents: Joi.array()
       })
       .done(done);
   });
@@ -141,7 +141,7 @@ describe("GET /type/{type}/schema", () => {
 
 
 /**
- * Add a new object
+ * Add a new document
  */
 describe("POST /type/{type}", () => {
   it("should return 200 OK with valid response", (done) => {
@@ -199,12 +199,12 @@ describe("POST /type/{type}", () => {
 });
 
 /**
- * Get IPFS Object (without handling encryption)
+ * Get IPFS Document (without handling encryption)
  */
-describe("GET /object/{hash}", () => {
+describe("GET /document/{hash}", () => {
   it("should return 200 OK with valid response", (done) => {
     frisby
-      .get(`${BASE_URL}/object/${hash}`)
+      .get(`${BASE_URL}/document/${hash}`)
       .expect("status", 200)
       .expect("bodyContains", "BEGIN PGP MESSAGE")
       .done(done);
@@ -212,7 +212,7 @@ describe("GET /object/{hash}", () => {
 
   it("should return 404 for a nonexistent type", (done) => {
     frisby
-      .get(`${BASE_URL}/object/wronghash`)
+      .get(`${BASE_URL}/document/wronghash`)
       .expect("status", 404)
       .expect("jsonTypes", {
         error: Joi.string()
@@ -223,7 +223,7 @@ describe("GET /object/{hash}", () => {
 
 
 /**
- * Show object by hash (for encrypted objects)
+ * Show document by hash (for encrypted documents)
  */
 describe("POST /type/{type}/{hash}", () => {
   it("should return 200 OK with valid response", (done) => {
@@ -261,10 +261,10 @@ describe("POST /type/{type}/{hash}", () => {
 
 
 /**
- * Update an existing object
+ * Update an existing document
  */
 describe("PUT /type/{type}/{hash}", () => {
-  it("should only allow users to update their own objects", (done) => {
+  it("should only allow users to update their own documents", (done) => {
     frisby
       .post(`${BASE_URL}/user/create`, { username: TEST_USERNAME + "put", password: TEST_PASSWORD })
       .expect("status", 200)
@@ -340,10 +340,10 @@ describe("PUT /type/{type}/{hash}", () => {
 
 
 /**
- * Remove an object from type index
+ * Remove an document from type index
  */
 describe("DELETE /type/{type}/{hash}", () => {
-  it("should only allow users to delete their own objects", (done) => {
+  it("should only allow users to delete their own documents", (done) => {
     frisby
       .post(`${BASE_URL}/user/create`, { username: TEST_USERNAME + "del", password: TEST_PASSWORD })
       .expect("status", 200)
@@ -403,10 +403,10 @@ describe("DELETE /type/{type}/{hash}", () => {
       .done(done);
   });
 
-  it("should return 404 for a nonexistent object", (done) => {
+  it("should return 404 for a nonexistent document", (done) => {
     frisby
       .setup({ request: { headers: { "x-access-token": token } }})
-      .del(`${BASE_URL}/type/${TEST_TYPE}/wrongobject`)
+      .del(`${BASE_URL}/type/${TEST_TYPE}/wrongdoc`)
       .expect("status", 404)
       .expect("jsonTypes", {
         success: Joi.string(),

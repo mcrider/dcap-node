@@ -64,11 +64,11 @@ app.post("/user/login", apiController.loginUser);
 app.post("/user/delete", apiController.validateToken, apiController.deleteUser);
 app.get("/type/:type", apiController.getType);
 app.get("/type/:type/schema", apiController.getTypeSchema);
-app.post("/type/:type", apiController.validateToken, apiController.addObject);
-app.post("/type/:type/:hash", apiController.validateToken, apiController.getTypeObject);
-app.put("/type/:type/:hash", apiController.validateToken, apiController.updateObject);
-app.delete("/type/:type/:hash", apiController.validateToken, apiController.deleteObject);
-app.get("/object/:hash", apiController.getObject);
+app.post("/type/:type", apiController.validateToken, apiController.addDocument);
+app.post("/type/:type/:hash", apiController.validateToken, apiController.getTypeDocument);
+app.put("/type/:type/:hash", apiController.validateToken, apiController.updateDocument);
+app.delete("/type/:type/:hash", apiController.validateToken, apiController.deleteDocument);
+app.get("/document/:hash", apiController.getDocument);
 
 /**
  * Error Handler. Provides full stack - remove for production

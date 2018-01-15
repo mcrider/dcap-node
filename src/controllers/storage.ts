@@ -7,7 +7,7 @@ const ipfs = IpfsAPI({ host: process.env.IPFS_HOST, port: process.env.IPFS_PORT,
  * Get IPFS Object
  * Return JSON
  */
-export let getObject = async (id: string) => {
+export let getDocument = async (id: string) => {
   try {
     const data = await ipfs.files.cat(id);
     const decoded = JSON.parse(data.toString("utf8"));
@@ -22,15 +22,15 @@ export let getObject = async (id: string) => {
 /**
  * Save IPFS Object
  */
-export let saveObject = async (data: Object) => {
+export let saveDocument = async (data: Object) => {
   const res = await ipfs.util.addFromStream(new Buffer(JSON.stringify(data), "utf8"));
-  const object = res[0];
+  const document = res[0];
 
   // Pin to server
-  if (process.env.PIN_OBJECTS === true) {
-    ipfs.pin.add(object.hash);
+  if (process.env.PIN_DOCUMENTS === true) {
+    ipfs.pin.add(document.hash);
   }
 
-  return object;
+  return document;
 };
 
