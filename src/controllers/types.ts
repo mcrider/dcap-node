@@ -197,11 +197,11 @@ export let saveObject = async (typeName: string, data: any, username: string, pr
   });
 
   if (exists) {
-    return { status: 500, response: { error: "Object already exists", hash: object.hash } };
+    return { status: 500, response: { error: "Object already exists" } };
   } else if (hash) {
       // Replace existing hash
       if (hashIndex < 0) {
-        return { status: 404, response: { success: "Object to update not found", hash: object.hash } };
+        return { status: 404, response: { success: "Object to update not found" } };
       } else if (typeIndex.objects[hashIndex].username !== username) {
         return { status: 403, response: { error: "Invalid username for this object" } };
       } else {
@@ -264,6 +264,6 @@ export let deleteObject = async (typeName: string, hash: string, username: strin
       delete typeIndex.objects[hashIndex];
     }
     updateTypeIndex(type, typeIndex);
-    return { status: 200, response: { success: "Object removed from typeIndex", hash: hash } };
+    return { status: 200, response: { success: "Object removed from type index", hash: hash } };
   }
 };

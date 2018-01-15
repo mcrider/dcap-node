@@ -1,7 +1,7 @@
 {
   "name": "dcap-node",
   "version": "0.1.0",
-  "description": "Convenient REST API for managing optionally encrypted documents hosted on IPFS",
+  "description": "Convenient REST API for managing optionally encrypted decentralized documents hosted on IPFS",
   "repository": {
     "type": "git",
     "url": "https://github.com/mcrider/dcap-node.git"

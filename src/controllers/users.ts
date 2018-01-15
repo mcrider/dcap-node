@@ -10,7 +10,7 @@ export let createUser = async (username: string, password: string) => {
   // Generate PGP keypair
   const key = await encryption.generateKeypair(username, password);
   if (!key) {
-    return { status: 403, response: { error: `Key creation failed` } };
+    return { status: 500, response: { error: "Key creation failed" } };
   }
 
   const user = new User({
@@ -31,7 +31,7 @@ export let createUser = async (username: string, password: string) => {
     };
   } catch (error) {
     const message = error.code == 11000 ? ": Username already exists" : "";
-    return { status: 403, response: { error: `User creation failed${message}` } };
+    return { status: 500, response: { error: `User creation failed${message}` } };
   }
 };
 
@@ -80,7 +80,7 @@ export let deleteUser = async (password: string, username: string) => {
 
   const valid = await user.comparePassword(password);
   if (!valid) {
-    return { status: 401, response: { error: "Authentication failed. Wrong Password." } };
+    return { status: 401, response: { error: "Incorrect password" } };
   }
 
   try {
