@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as Ajv from "ajv";
 
 import Type from "../models/Type";
-import { User } from "../models/User";
+import User from "../models/User/index";
 import * as storage from "./storage";
 import * as encryption from "./encryption";
 
@@ -120,8 +120,9 @@ export let getEncryptedData = async (typeName: string, hash: string, privKey: st
     return { status: 404, response: { error: "Type not found" } };
   }
 
-  const user = await User.findOne({ username: username });
-  if (!user) {
+  const user = new User(username, password);
+  const userData = await user.fetch();
+  if (!userData) {
     return { status: 404, response: { error: "User not found" } };
   }
 
@@ -129,7 +130,7 @@ export let getEncryptedData = async (typeName: string, hash: string, privKey: st
     return { status: 401, response: { error: "Password and/or private key not included in request body" } };
   } else if (type.schema.encrypted) {
     const data = await storage.getDocument(hash);
-    const decrypted = await encryption.decrypt(data, user.pub_key, privKey, password);
+    const decrypted = await encryption.decrypt(data, userData.pub_key, privKey, password);
     return { status: 200, response: decrypted };
   } else {
     const data = await storage.getDocument(hash);
@@ -174,9 +175,16 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
       return { status: 500, response: { error: "Password not passed in request body" } };
     }
 
-    const user = await User.findOne({ username: username });
+    let userData;
+    try {
+      const user = new User(username, password);
+      userData = await user.fetch();
+    } catch (error) {
+      console.error(error);
+      return { status: 500, response: { error: "Error getting user data" } };
+    }
 
-    data = await encryption.encrypt(data, user.pub_key, privKey, password);
+    data = await encryption.encrypt(data, userData.pub_key ? userData.pub_key : false, privKey, password);
   }
 
   // Save to IPFS

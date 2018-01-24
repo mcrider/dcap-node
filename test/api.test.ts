@@ -2,8 +2,6 @@ import * as frisby from "frisby";
 import { Joi } from "frisby";
 import * as dotenv from "dotenv";
 
-import { User } from "../src/models/User";
-
 dotenv.config({ path: ".env" });
 
 const BASE_URL = `http://localhost:${process.env.PORT}`;
@@ -17,6 +15,7 @@ let privKey;
 let token;
 let hash;
 
+process.on("unhandledRejection", r => console.log(r));
 
 /**
  * Show API info page
@@ -78,7 +77,7 @@ describe("POST /user/login", () => {
   it("should fail with an invalid password", (done) => {
     frisby
       .post(`${BASE_URL}/user/login`, { username: TEST_USERNAME, password: "wrongpass" })
-      .expect("status", 403)
+      .expect("status", 401)
       .expect("jsonTypes", {
         error: Joi.string()
       })

@@ -115,9 +115,9 @@ HTTP/1.1 200 OK
 ```
 
 **Error Responses**
-- `403` User not found
-- `403` Wrong Password
-- `403` User Login Failed
+- `401` User not found
+- `401` Wrong Password
+- `401` User Login Failed
 
 
 ### Delete Account

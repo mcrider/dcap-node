@@ -5,21 +5,26 @@ const SALT_WORK_FACTOR = 12;
 
 mongoose.connect(process.env.MONGODB_URI);
 
-export interface IUser extends mongoose.Document {
+export interface IMongooseUser extends mongoose.Document {
     username: string;
     password: string;
     pub_key: string;
     comparePassword: Function;
 }
 
-export interface IUserModel extends mongoose.Model<IUser> {
-  findByUsername(id: string): Promise<IUser>;
-}
-
 const schema = new mongoose.Schema({
-  username: { type: String, required: true, index: { unique: true } },
-  password: { type: String, required: true },
-  pub_key: { type: String }
+  username: {
+    type: String,
+    required: true,
+    index: { unique: true }
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  pub_key: {
+    type: String
+  }
 });
 
 schema.pre("save", async function (next) {
@@ -32,9 +37,7 @@ schema.pre("save", async function (next) {
 });
 
 schema.methods.comparePassword = async function (candidatePassword: string) {
-  const valid = await bcrypt.compare(candidatePassword, this.password);
-  return valid;
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-
-export const User = mongoose.model<IUser>("User", schema) as IUserModel;
+export const MongooseUser = mongoose.model<IMongooseUser>("Users", schema);

@@ -98,7 +98,7 @@ export let createUser = async (req: Request, res: Response) => {
  * Remove your account
  */
 export let deleteUser = async (req: Request, res: Response) => {
-  const { status, response } = await users.deleteUser(req.body.password, req.body.username);
+  const { status, response } = await users.deleteUser(req.body.username, req.body.password);
   res.status(status).json(response);
 };
 
