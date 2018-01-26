@@ -1,18 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "title": "todo",
-  "description": "Simple todo content type",
+  "title": "user",
+  "description": "Simple user content type",
   "type": "object",
   "encrypted": true,
   "properties": {
-    "text": {
+    "username": {
       "type": "string"
     },
-    "completed": {
+    "password": {
+      "type": "string"
+    },
+    "pub_key": {
       "type": "string"
     }
   },
   "required": [
-    "text"
+    "username",
+    "password",
+    "pub_key"
   ]
 }

@@ -3,7 +3,13 @@ import * as bcrypt from "bcrypt";
 
 const SALT_WORK_FACTOR = 12;
 
-mongoose.connect(process.env.MONGODB_URI);
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+}
 
 export interface IMongooseUser extends mongoose.Document {
     username: string;

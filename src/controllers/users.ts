@@ -8,6 +8,12 @@ import User from "../models/User/index";
  * Create a new user
  */
 export let createUser = async (username: string, password: string) => {
+  const user = new User(username, password);
+
+  if (await user.fetch()) {
+    return { status: 401, response: { error: "User already exists" } };
+  }
+
   // Generate PGP keypair
   const key = await encryption.generateKeypair(username, password);
   if (!key) {
@@ -15,7 +21,6 @@ export let createUser = async (username: string, password: string) => {
   }
 
   try {
-    const user = new User(username, password);
     const userData = await user.create(key.publicKeyArmored);
     return {
       status: 200,
@@ -26,8 +31,7 @@ export let createUser = async (username: string, password: string) => {
       }
     };
   } catch (error) {
-    const message = error.code == 11000 ? ": Username already exists" : "";
-    return { status: 500, response: { error: `User creation failed${message}` } };
+    return { status: 500, response: { error: `User creation failed: ${error.code}` } };
   }
 };
 
@@ -78,7 +82,7 @@ export let deleteUser = async (username: string, password: string) => {
     const user = new User(username, password);
 
     const userData = await user.fetch();
-    if (!user.fetch()) {
+    if (!userData) {
       return { status: 401, response: { error: "Authentication failed. User not found." } };
     }
 

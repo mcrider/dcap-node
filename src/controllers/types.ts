@@ -60,7 +60,7 @@ export let getType = async (typeName: string, username?: string) => {
 
     if (username) {
       // Filter by username
-      response.documents = response.documents.filter(filteredDocument => filteredDocument.username === username);
+      response.documents = response.documents.filter(filteredDocument => filteredDocument ? (filteredDocument.username === username) : false);
     }
 
     response.hash = type.hash;
@@ -102,12 +102,17 @@ export let checkTypeHashes = async () => {
  */
 export let updateTypeIndex = async (type: Type, typeIndex: Object) => {
   const document = await storage.saveDocument(typeIndex);
+
   const hash = document.hash;
 
   const schema = type.schema;
   schema.hash = hash;
 
-  fs.writeFileSync(typesDir + type.title + ".json", JSON.stringify(schema, undefined, 2));
+  try {
+    fs.writeFileSync(typesDir + type.title + ".json", JSON.stringify(schema, undefined, 2));
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 
@@ -265,12 +270,7 @@ export let deleteDocument = async (typeName: string, hash: string, username: str
     if (typeIndex.documents[hashIndex].username !== username) {
       return { status: 403, response: { error: "Invalid username for this document" } };
     }
-
-    if (typeIndex.documents.length === 1) {
-      typeIndex.documents = [];
-    } else {
-      delete typeIndex.documents[hashIndex];
-    }
+    typeIndex.documents.splice(hashIndex, 1);
     updateTypeIndex(type, typeIndex);
     return { status: 200, response: { success: "Document removed from type index", hash: hash } };
   }

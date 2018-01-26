@@ -74,6 +74,7 @@ app.get("/document/:hash", apiController.getDocument);
  * Error Handler. Provides full stack - remove for production
  */
 app.use(errorHandler());
+process.on("unhandledRejection", r => console.log(r));
 
 
 /**

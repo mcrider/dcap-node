@@ -1,5 +1,5 @@
 import * as MongoUser from "./mongo/index";
-// import IpfsUser from "./ipfs";
+import * as IpfsUser from "./ipfs/index";
 
 /**
  * This is a proxy class to various user storage implementations
@@ -14,7 +14,11 @@ export default class User {
     this._password = password;
 
     // TODO set based on env config
-    this._userHandler = MongoUser;
+    if (process.env.USER_STORAGE === "mongo") {
+      this._userHandler = MongoUser;
+    } else {
+      this._userHandler = IpfsUser;
+    }
   }
 
   /**
