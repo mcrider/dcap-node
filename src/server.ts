@@ -13,6 +13,7 @@ import * as dotenv from "dotenv";
 import * as flash from "express-flash";
 import * as path from "path";
 import expressValidator = require("express-validator");
+import daemonFactory = require("ipfsd-ctl");
 
 
 /**
@@ -26,13 +27,6 @@ dotenv.config({ path: ".env" });
  */
 import * as apiController from "./controllers/api";
 import * as types from "./controllers/types";
-
-
-/**
- * Load global config
- */
-global.dcap = {};
-types.loadTypes();
 
 
 /**
@@ -70,21 +64,43 @@ app.put("/type/:type/:hash", apiController.validateToken, apiController.updateDo
 app.delete("/type/:type/:hash", apiController.validateToken, apiController.deleteDocument);
 app.get("/document/:hash", apiController.getDocument);
 
+
 /**
  * Error Handler. Provides full stack - remove for production
  */
 app.use(errorHandler());
 process.on("unhandledRejection", r => console.log(r));
+process.on("exit", function () {
+  if (global.ipfsd) {
+    global.ipfsd.stop();
+  }
+});
 
 
 /**
- * Start Express server.
+ * Start IPFS daemon then Express server.
  */
-app.listen(app.get("port"), () => {
-  console.log("--------------------------------------------------------------");
-  console.log(("|  App is running at http://localhost:%d in %s mode"), app.get("port"), app.get("env"));
-  console.log("|  Press CTRL-C to stop");
-  console.log("--------------------------------------------------------------\n");
-});
+daemonFactory
+  .create({ type: "go" })
+  .spawn({ disposable: false }, (err, ipfsd) => {
+    if (err) {
+      throw err;
+    }
+
+    ipfsd.init((_) => {
+      ipfsd.start((_) => {
+        global.ipfsd = ipfsd;
+        global.dcap = {};
+        types.loadTypes();
+
+        app.listen(app.get("port"), () => {
+          console.log("--------------------------------------------------------------");
+          console.log(("|  App is running at http://localhost:%d in %s mode"), app.get("port"), app.get("env"));
+          console.log("|  Press CTRL-C to stop");
+          console.log("--------------------------------------------------------------\n");
+        });
+      });
+    });
+  });
 
 module.exports = app;
