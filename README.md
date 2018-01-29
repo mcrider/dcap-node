@@ -9,17 +9,9 @@ With DCAP you can create document types for things such as notes, todos, chat me
 ## Setup
 ### Requirements
 - Node.js
-<<<<<<< HEAD
-- [MongoDB](https://docs.mongodb.com/manual/installation/)
 
 ### Installation
-Clone this repository and run `npm install`. Copy the sample configuration file (`.env.example`) to `.env` and edit it to match your desired configuration. Run `npm start` to start DCAP on `http://localhost:5000`. Please use this with SSL on production environments.
-=======
-- [An active IPFS Daemon](https://ipfs.io/docs/getting-started/)
-
-### Installation
-Clone this repository and run `npm install`. Copy the sample configuration file (`.env.example`) to `.env` and edit it to match your desired configuration (you should change the `TOKEN_SECRET` and `SERVER_KEY_PASS` values to different hard-to-guess passwords). Start your IPFS daemon (run `ipfs daemon`) then run `npm start` to start DCAP on `http://localhost:5000`. Please use this with SSL on production environments.
->>>>>>> 9794db516019e9a84bfac84d89daab0acdebec70
+Clone this repository and run `npm install`. Copy the sample configuration file (`.env.example`) to `.env` and edit it to match your desired configuration (you should change the `TOKEN_SECRET` and `SERVER_KEY_PASS` values to different hard-to-guess passwords). Run `npm start` to start DCAP on `http://localhost:5000`. Please use this with SSL on production environments.
 
 ### Configuration
 The main configuration is loaded from `.env`. You can change the security behavior and whether DCAP should pin IPFS documents from these settings.
