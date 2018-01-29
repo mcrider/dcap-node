@@ -38,6 +38,7 @@ In the `/src/config/types` directory are the type definitions that DCAP uses to 
 ```
 
 **User Storage**
+
 Users are stored encrypted on IPFS. If you don't want public access to your list of usernames, you can use MongoDB as a user storage solution. Ensure a mongo daemon is running and in `.env` comment out `USER_STORAGE=ipfs` and uncomment `USER_STORAGE=mongo` and `MONGODB_URI` and point it to your mongo instance.
 
 ## API Reference
