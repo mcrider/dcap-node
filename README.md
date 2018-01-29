@@ -18,8 +18,6 @@ The main configuration is loaded from `.env`. You can change the security behavi
 
 In the `/src/config/types` directory are the type definitions that DCAP uses to validate the content you post. These must be written in [JSON Schema](http://json-schema.org) to be validated by DCAP. You can use the example types that come bundled with DCAP but will probably want to add some more attributes to make them useful.
 
-Users are stored encrypted on IPFS. If you don't want public access to your list of usernames, you can use MongoDB as a user storage solution. Ensure a mongo daemon is running and in `.env` comment out `USER_STORAGE=ipfs` and uncomment `USER_STORAGE=mongo` and `MONGODB_URI` and point it to your mongo instance.
-
 **Example type configuration**
 ```
 {
@@ -38,6 +36,9 @@ Users are stored encrypted on IPFS. If you don't want public access to your list
   ]
 }
 ```
+
+**User Storage**
+Users are stored encrypted on IPFS. If you don't want public access to your list of usernames, you can use MongoDB as a user storage solution. Ensure a mongo daemon is running and in `.env` comment out `USER_STORAGE=ipfs` and uncomment `USER_STORAGE=mongo` and `MONGODB_URI` and point it to your mongo instance.
 
 ## API Reference
 
