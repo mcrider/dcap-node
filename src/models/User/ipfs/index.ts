@@ -72,7 +72,7 @@ export let createUser = async (username: string, password: string, pubKey: strin
 };
 
 export let fetchUser = async (username: string) => {
-  const index = await types.getType("user", username);
+  const index = await types.getType("user", { username: username});
   if (!index.response.documents.length) {
     return false;
   }
@@ -100,7 +100,7 @@ export let checkPassword = async (username, password: string) => {
 };
 
 export let deleteUser = async (username: string) => {
-  const index = await types.getType("user", username);
+  const index = await types.getType("user", { username: username});
   const document = index.response.documents[0];
   if (!document) {
     return false;

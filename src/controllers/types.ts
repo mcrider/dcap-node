@@ -53,14 +53,16 @@ export let loadTypes = () => {
 /**
  * Get type by name (shows index of documents)
  */
-export let getType = async (typeName: string, username?: string) => {
+export let getType = async (typeName: string, filter?: object) => {
   const type = global.dcap.typeSchemas.get(typeName);
   if (type) {
     const response = await storage.getDocument(type.hash);
 
-    if (username) {
-      // Filter by username
-      response.documents = response.documents.filter(filteredDocument => filteredDocument ? (filteredDocument.username === username) : false);
+    if (filter && Object.keys(filter).length) {
+      const field = Object.keys(filter)[0];
+      const value = filter[field];
+      // Filter by query
+      response.documents = response.documents.filter(filteredDocument => filteredDocument[field] ? (filteredDocument[field] === value) : false);
     }
 
     response.hash = type.hash;

@@ -158,7 +158,7 @@ HTTP/1.1 200 OK
 
 
 ### Get Type Index
-`GET /type/:type[?username=:username]`
+`GET /type/:type[?filter=:filter]`
 
 Gets list of documents for a given type. You can also filter documents by username with the username query parameter.
 
@@ -166,7 +166,7 @@ Gets list of documents for a given type. You can also filter documents by userna
 - `:type` Type name
 
 **Query Params**
-- `:username`: Username to filter documents by
+- `:filter`: Parameter to filter documents by. This can be `username`/`created`/`updated` or any parameters defined as public by the type's schema.
 
 **Success Response**
 

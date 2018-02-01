@@ -284,15 +284,11 @@ describe("PUT /type/{type}/{hash}", () => {
   it("should only allow users to update their own documents", (done) => {
     frisby
       .post(`${BASE_URL}/user/create`, { username: TEST_USERNAME + "put", password: TEST_PASSWORD })
-      .inspectStatus()
-      .inspectResponse()
       .expect("status", 200)
       .then((res) => {
         const putPrivKey = res.json.priv_key;
 
         return frisby.post(`${BASE_URL}/user/login`, { username: TEST_USERNAME + "put", password: TEST_PASSWORD })
-          .inspectStatus()
-          .inspectResponse()
           .expect("status", 200)
           .then((res) => {
             const putToken = res.json.token;
@@ -303,8 +299,6 @@ describe("PUT /type/{type}/{hash}", () => {
                 password: TEST_PASSWORD,
                 priv_key: putPrivKey
               })
-              .inspectStatus()
-              .inspectResponse()
               .expect("status", 403)
               .expect("jsonTypes", {
                 error: Joi.string()
@@ -313,8 +307,6 @@ describe("PUT /type/{type}/{hash}", () => {
                 // Cleanup
                 return frisby.setup({ request: { headers: { "x-access-token": putToken } }})
                   .post(`${BASE_URL}/user/delete`, { token: putToken, password: TEST_PASSWORD })
-                  .inspectStatus()
-                  .inspectResponse()
                   .expect("status", 200);
               });
           });

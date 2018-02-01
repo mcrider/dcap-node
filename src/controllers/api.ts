@@ -21,8 +21,7 @@ export let getRoot = (req: Request, res: Response) => {
  * Get type by name (shows index of documents)
  */
 export let getType = async (req: Request, res: Response) => {
-  const user = req.query.user || req.query.username || false;
-  const { status, response } = await types.getType(req.params.type, user);
+  const { status, response } = await types.getType(req.params.type, req.query);
   res.status(status).json(response);
 };
 
