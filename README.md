@@ -29,8 +29,14 @@ In the `/src/config/types` directory are the type definitions that DCAP uses to 
   "properties": {
     "text": {
       "type": "string"
+    },
+    "public": {
+      "type": "string"
     }
   },
+  "public": [ // Array of properties that should appear in the public index
+    "public"
+  ],
   "required": [ // Required field names
     "text"
   ]

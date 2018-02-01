@@ -9,7 +9,7 @@ const TEST_USERNAME = "testuser";
 const TEST_PASSWORD = "abc123";
 // TODO: Use mock type schemas (encrypted and unencrypted) instead of test.json
 const TEST_TYPE = "test";
-const TEST_DATA = { "text": "foobar" };
+const TEST_DATA = { "text": "foo", "public": "bar" };
 
 let privKey;
 let token;
@@ -80,32 +80,6 @@ describe("POST /user/login", () => {
       .expect("status", 401)
       .expect("jsonTypes", {
         error: Joi.string()
-      })
-      .done(done);
-  });
-});
-
-
-/**
- * Get type by name (shows index of documents)
- */
-describe("GET /type/{type}", () => {
-  it("should return 200 OK with valid response", (done) => {
-    frisby
-      .get(`${BASE_URL}/type/${TEST_TYPE}`)
-      .expect("status", 200)
-      .expect("jsonTypes", {
-        documents: Joi.array()
-      })
-      .done(done);
-  });
-
-  it("should return 404 for a nonexistent type", (done) => {
-    frisby
-      .get(`${BASE_URL}/type/foo`)
-      .expect("status", 404)
-      .expect("jsonTypes", {
-        documents: Joi.array()
       })
       .done(done);
   });
@@ -197,6 +171,50 @@ describe("POST /type/{type}", () => {
   });
 });
 
+
+/**
+ * Get type by name (shows index of documents)
+ */
+describe("GET /type/{type}", () => {
+  it("should return 200 OK with valid response", (done) => {
+    frisby
+      .get(`${BASE_URL}/type/${TEST_TYPE}`)
+      .expect("status", 200)
+      .expect("jsonTypes", {
+        documents: Joi.array().length(1)
+      })
+      .done(done);
+  });
+
+  it("each item should have the correct public fields", (done) => {
+    frisby
+      .get(`${BASE_URL}/type/${TEST_TYPE}`)
+      .expect("status", 200)
+      .expect("jsonTypes", {
+        documents: Joi.array().length(1)
+      })
+      .expect("jsonTypes", "documents.*", { // Assert *each* object in array matches
+        "public": Joi.string().required(),
+        "created": Joi.date().timestamp().required(),
+        "updated": Joi.date().timestamp().required(),
+        "username": Joi.string().required(),
+        "link": Joi.object().required()
+      })
+      .done(done);
+  });
+
+  it("should return 404 for a nonexistent type", (done) => {
+    frisby
+      .get(`${BASE_URL}/type/foo`)
+      .expect("status", 404)
+      .expect("jsonTypes", {
+        documents: Joi.array()
+      })
+      .done(done);
+  });
+});
+
+
 /**
  * Get IPFS Document (without handling encryption)
  */
@@ -266,11 +284,15 @@ describe("PUT /type/{type}/{hash}", () => {
   it("should only allow users to update their own documents", (done) => {
     frisby
       .post(`${BASE_URL}/user/create`, { username: TEST_USERNAME + "put", password: TEST_PASSWORD })
+      .inspectStatus()
+      .inspectResponse()
       .expect("status", 200)
       .then((res) => {
         const putPrivKey = res.json.priv_key;
 
         return frisby.post(`${BASE_URL}/user/login`, { username: TEST_USERNAME + "put", password: TEST_PASSWORD })
+          .inspectStatus()
+          .inspectResponse()
           .expect("status", 200)
           .then((res) => {
             const putToken = res.json.token;
@@ -281,6 +303,8 @@ describe("PUT /type/{type}/{hash}", () => {
                 password: TEST_PASSWORD,
                 priv_key: putPrivKey
               })
+              .inspectStatus()
+              .inspectResponse()
               .expect("status", 403)
               .expect("jsonTypes", {
                 error: Joi.string()
@@ -289,6 +313,8 @@ describe("PUT /type/{type}/{hash}", () => {
                 // Cleanup
                 return frisby.setup({ request: { headers: { "x-access-token": putToken } }})
                   .post(`${BASE_URL}/user/delete`, { token: putToken, password: TEST_PASSWORD })
+                  .inspectStatus()
+                  .inspectResponse()
                   .expect("status", 200);
               });
           });

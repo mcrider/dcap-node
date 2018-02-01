@@ -155,7 +155,7 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
   }
 
   if (!data) {
-    return { status: 500, response: { error: "Must supply data document in request body" } };
+    return { status: 500, response: { error: "Must supply data in request body" } };
   }
 
   if (!username) {
@@ -171,6 +171,7 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
 
   // If document is supposed to be encrypted, do so
   // Fail if private key and password not passed to request
+  let documentData = data;
   if (type.schema.encrypted) {
     if (!privKey) {
       return { status: 500, response: { error: "Private key not passed in request body" } };
@@ -189,11 +190,11 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
       return { status: 500, response: { error: "Error getting user data" } };
     }
 
-    data = await encryption.encrypt(data, userData.pub_key ? userData.pub_key : false, privKey, password);
+    documentData = await encryption.encrypt(data, userData.pub_key ? userData.pub_key : false, privKey, password);
   }
 
   // Save to IPFS
-  const document = await storage.saveDocument(data);
+  const document = await storage.saveDocument(documentData);
 
   // If not already in there, save to type index
   const typeIndex = await storage.getDocument(type.hash);
@@ -212,29 +213,43 @@ export let saveDocument = async (typeName: string, data: any, username: string, 
   if (exists) {
     return { status: 500, response: { error: "Document already exists" } };
   } else if (hash) {
-      // Replace existing hash
-      if (hashIndex < 0) {
-        return { status: 404, response: { success: "Document to update not found" } };
-      } else if (typeIndex.documents[hashIndex].username !== username) {
-        return { status: 403, response: { error: "Invalid username for this document" } };
-      } else {
-        const created = typeIndex.documents[hashIndex].created;
-        typeIndex.documents[hashIndex] = {
-          "created": created,
-          "updated": Date.now(),
-          "username": username,
-          "link": {"/": document.hash },
-        };
-        updateTypeIndex(type, typeIndex);
-        return { status: 200, response: { success: "Document updated", hash: document.hash } };
+    // Replace existing hash
+    if (hashIndex < 0) {
+      return { status: 404, response: { success: "Document to update not found" } };
+    } else if (typeIndex.documents[hashIndex].username !== username) {
+      return { status: 403, response: { error: "Invalid username for this document" } };
+    } else {
+      const created = typeIndex.documents[hashIndex].created;
+      const indexItem = {
+        "created": created,
+        "updated": Date.now(),
+        "username": username,
+        "link": {"/": document.hash },
+      };
+      // Add public items to index
+      if (type.schema.public) {
+        type.schema.public.forEach((item) => {
+          indexItem[item] = data[item];
+        });
       }
+      typeIndex.documents[hashIndex] = indexItem;
+      updateTypeIndex(type, typeIndex);
+      return { status: 200, response: { success: "Document updated", hash: document.hash } };
+    }
   } else {
-    typeIndex.documents.push({
+    const indexItem = {
       "created": Date.now(),
       "updated": Date.now(),
       "username": username,
       "link": {"/": document.hash },
-    });
+    };
+    // Add public items to index
+    if (type.schema.public) {
+      type.schema.public.forEach((item) => {
+        indexItem[item] = data[item];
+      });
+    }
+    typeIndex.documents.push(indexItem);
     updateTypeIndex(type, typeIndex);
     return { status: 200, response: { success: "Document created", hash: document.hash } };
   }

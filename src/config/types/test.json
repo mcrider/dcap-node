@@ -7,9 +7,15 @@
   "properties": {
     "text": {
       "type": "string"
+    },
+    "public": {
+      "type": "string"
     }
   },
   "required": [
     "text"
+  ],
+  "public": [
+    "public"
   ]
 }
