@@ -11,7 +11,7 @@
   "scripts": {
     "start": "npm run build && npm run watch",
     "build": "npm run build-ts && npm run tslint",
-    "serve": "nodemon dist/server.js",
+    "serve": "nodemon dist/server.js --watch src -e ts,js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve\"",
     "test": "jest",
     "build-ts": "tsc",
@@ -20,10 +20,6 @@
     "debug": "npm run build && npm run watch-debug",
     "serve-debug": "nodemon --inspect dist/server.js",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
-  },
-  "nodemonConfig": {
-    "ignore": ["src/config/types/*.json"],
-    "watch": ["src/"]
   },
   "jest": {
     "globals": {
