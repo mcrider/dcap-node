@@ -184,7 +184,7 @@ HTTP/1.1 200 OK
     },
     ...
   ],
-  "hash": "QmQ5SBZnsAbZ1BEmsAZe8keBDbUwQMzuc2ZF7njYDE5Bum" // IFPS reference to this index
+  "hash": "QmQ5SBZnsAbZ1BEmsAZe8keBDbUwQMzuc2ZF7njYDE5Bum" // IPFS reference to this index
 }
 ```
 
